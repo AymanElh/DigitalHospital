@@ -1,6 +1,8 @@
 package com.youcode.digitalhospital.model;
 
 import jakarta.persistence.*;
+import org.hibernate.FetchMode;
+import org.hibernate.annotations.Fetch;
 
 import java.time.LocalDateTime;
 

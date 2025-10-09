@@ -1,6 +1,9 @@
 package com.youcode.digitalhospital.model;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,6 +22,7 @@ public class Department {
     private String description;
 
     @OneToMany(mappedBy = "department")
+    @Fetch(FetchMode.JOIN)
     private List<Doctor> doctors = new ArrayList<>();
 
     @Column(name = "created_at", nullable = false, updatable = false)

@@ -22,6 +22,9 @@ public abstract class User {
     @Column(nullable = false, length = 255)
     protected String password;
 
+    @Transient
+    protected String confirmPassword;
+
     @Column(nullable = false, length = 25)
     @Enumerated(EnumType.STRING)
     private RoleEnum role;

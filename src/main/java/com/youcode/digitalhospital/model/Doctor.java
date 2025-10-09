@@ -1,6 +1,8 @@
 package com.youcode.digitalhospital.model;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,6 +18,7 @@ public class Doctor extends User {
 
     @ManyToOne
     @JoinColumn(name = "department_id")
+    @Fetch(FetchMode.JOIN)
     private Department department;
 
     // Constructors

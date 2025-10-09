@@ -1,6 +1,8 @@
 package com.youcode.digitalhospital.model;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.Type;
+import org.hibernate.dialect.type.PostgreSQLEnumJdbcType;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
