@@ -1,8 +1,6 @@
 package com.youcode.digitalhospital.model;
 
 import jakarta.persistence.*;
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
 import lombok.*;
 
 import java.time.LocalDate;
@@ -26,7 +24,6 @@ public class Consultation {
 
     @ManyToOne
     @JoinColumn(name = "doctor_id", nullable = false)
-    @Fetch(FetchMode.JOIN)
     private Doctor doctor;
 
     @OneToOne
@@ -65,75 +62,14 @@ public class Consultation {
         this.reason = reason;
     }
 
-    public Consultation() {}
-
-    public LocalDate getConsultationDate() {
-        return consultationDate;
-    }
-
-    public void setConsultationDate(LocalDate consultationDate) {
-        this.consultationDate = consultationDate;
-    }
-
-    public LocalDateTime getConsultationTime() {
-        return consultationTime;
-    }
-
-    public void setConsultationTime(LocalDateTime consultationTime) {
-        this.consultationTime = consultationTime;
-    }
-
-    public ConsultationStatus getConsultationStatus() {
-        return consultationStatus;
-    }
-
-    public void setConsultationStatus(ConsultationStatus consultationStatus) {
-        this.consultationStatus = consultationStatus;
-    }
-
-    public Doctor getDoctor() {
-        return doctor;
-    }
-
-    public void setDoctor(Doctor doctor) {
-        this.doctor = doctor;
-    }
-
-    public String getMedicalReport() {
-        return medicalReport;
-    }
-
-    public void setMedicalReport(String medicalReport) {
-        this.medicalReport = medicalReport;
-    }
-
-    public Patient getPatient() {
-        return patient;
-    }
-
-    public void setPatient(Patient patient) {
-        this.patient = patient;
-    }
-
-    public String getReason() {
-        return reason;
-    }
-
-    public void setReason(String reason) {
-        this.reason = reason;
-    }
-
-    public ConsultationSlot getSlot() {
-        return slot;
+    @PrePersist
+    protected void onCreate() {
+        createdAt = LocalDateTime.now();
+        updatedAt = LocalDateTime.now();
     }
 
     @PreUpdate
     protected void onUpdate() {
         updatedAt = LocalDateTime.now();
     }
-
-    public LocalDateTime getCreatedAt() {return createdAt;}
-
-    public LocalDateTime getUpdatedAt() {return updatedAt;}
 }
-

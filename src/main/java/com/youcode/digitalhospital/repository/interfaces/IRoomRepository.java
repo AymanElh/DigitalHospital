@@ -11,7 +11,7 @@ import java.util.Optional;
  * Repository interface for Room entity
  * Handles room-specific data access operations and slot management
  */
-public interface IRoomRepository extends IGenericRepository<Room> {
+public interface IRoomRepository {
 
     /**
      * Find a room by room number

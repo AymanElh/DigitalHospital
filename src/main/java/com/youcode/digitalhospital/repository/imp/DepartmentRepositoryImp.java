@@ -14,15 +14,17 @@ public class DepartmentRepositoryImp extends GenericRepositoryImp implements IDe
 
     @Override
     public List<Department> findByNameContaining(String namePattern, EntityManager em) {
-        String jpql = "SELECT d FROM Department d WHERE d.name = :name";
+        String jpql = "SELECT d FROM Department d WHERE d.name LIKE :name";
         return em.createQuery(jpql, Department.class)
-                .setParameter("name", namePattern)
+                .setParameter("name", "%" + namePattern + "%")
                 .getResultList();
     }
 
     @Override
     public List<Department> findDepartmentsWithDoctors(EntityManager em) {
-        return List.of();
+        String jpql = "SELECT DISTINCT d FROM Department d LEFT JOIN FETCH d.doctors";
+        return em.createQuery(jpql, Department.class)
+                .getResultList();
     }
 
     @Override
@@ -36,17 +38,30 @@ public class DepartmentRepositoryImp extends GenericRepositoryImp implements IDe
 
     @Override
     public boolean existsByName(String name, EntityManager em) {
-        return false;
+        String jpql = "SELECT COUNT(d) FROM Department d WHERE d.name = :name";
+        Long count = em.createQuery(jpql, Long.class)
+                .setParameter("name", name)
+                .getSingleResult();
+        return count > 0;
     }
 
     @Override
     public Long countAllDepartments(EntityManager em) {
-        return 0L;
+        String jpql = "SELECT COUNT(d) FROM Department d";
+        return em.createQuery(jpql, Long.class)
+                .getSingleResult();
     }
 
     @Override
     public Optional<Department> findByIdWithDoctors(Long departmentId, EntityManager em) {
-        return Optional.empty();
+        try {
+            String jpql = "SELECT d FROM Department d LEFT JOIN FETCH d.doctors WHERE d.id = :id";
+            Department department = em.createQuery(jpql, Department.class)
+                    .setParameter("id", departmentId)
+                    .getSingleResult();
+            return Optional.ofNullable(department);
+        } catch (Exception e) {
+            return Optional.empty();
+        }
     }
-
 }

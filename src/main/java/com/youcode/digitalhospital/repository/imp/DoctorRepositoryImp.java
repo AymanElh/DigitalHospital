@@ -16,8 +16,9 @@ public class DoctorRepositoryImp extends GenericRepositoryImp<Doctor> implements
 
     @Override
     public Optional<Doctor> findDoctorByEmail(String email) {
-        EntityManager em = JPAConfig.getEntityManager();
+        EntityManager em = null;
         try {
+            em = JPAConfig.getEntityManager();
             String jpql = "SELECT d FROM Doctor d WHERE d.email = :email";
             Doctor doctor = em.createQuery(jpql, Doctor.class)
                     .setParameter("email", email)
@@ -26,33 +27,43 @@ public class DoctorRepositoryImp extends GenericRepositoryImp<Doctor> implements
         } catch (Exception e) {
             return Optional.empty();
         } finally {
-            em.close();
+            if (em != null) em.close();
         }
     }
 
     @Override
     public List<Doctor> findByDepartment(Department department) {
-        EntityManager em = JPAConfig.getEntityManager();
+        EntityManager em = null;
         try {
+            em = JPAConfig.getEntityManager();
             String jpql = "SELECT d FROM Doctor d WHERE d.department.id = :depId";
             return em.createQuery(jpql, Doctor.class)
                     .setParameter("depId", department.getId())
                     .getResultList();
         } finally {
-            em.close();
+            if (em != null) em.close();
         }
     }
 
     @Override
     public List<Doctor> findBySpeciality(String speciality) {
-        EntityManager em = JPAConfig.getEntityManager();
+        EntityManager em = null;
         try {
-            String jpql = "SELECT d FROM Doctor d WHERE d.speciality = :speciality";
+            em = JPAConfig.getEntityManager();
+            String jpql = "SELECT d FROM Doctor d WHERE d.specialty = :specialty";
             return em.createQuery(jpql, Doctor.class)
-                    .setParameter("speciality", speciality)
+                    .setParameter("specialty", speciality)
                     .getResultList();
         } finally {
-            em.close();
+            if (em != null) em.close();
         }
+    }
+
+    // Add method to match Main class call
+    public List<Doctor> findBySpecialty(String specialty, EntityManager em) {
+        String jpql = "SELECT d FROM Doctor d WHERE d.speciality = :specialty";
+        return em.createQuery(jpql, Doctor.class)
+                .setParameter("specialty", specialty)
+                .getResultList();
     }
 }
