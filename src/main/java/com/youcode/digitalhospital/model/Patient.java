@@ -1,6 +1,7 @@
 package com.youcode.digitalhospital.model;
 
 import jakarta.persistence.*;
+import lombok.*;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -8,6 +9,10 @@ import java.util.List;
 
 @Entity
 @Table(name = "patients")
+@Getter
+@Setter
+@NoArgsConstructor
+@ToString(callSuper = true)
 public class Patient extends User {
     @Column
     private double weight;
@@ -25,46 +30,12 @@ public class Patient extends User {
     private List<Consultation> consultations = new ArrayList<>();
 
     public Patient(Long id, String firstName, String lastName, String email, String password, double height, double weight) {
-        super(id, firstName, lastName, email, password, RoleEnum.PATIENT);
+        super(id, firstName, lastName, email, password, null, RoleEnum.PATIENT, null, null);
         this.height = height;
         this.weight = weight;
-    }
-
-
-    public Patient() {
-        super();
-        setRole(RoleEnum.PATIENT);
-    }
-
-    public double getHeight() {
-        return height;
-    }
-
-    public void setHeight(double height) {
-        this.height = height;
-    }
-
-    public double getWeigth() {
-        return weight;
-    }
-
-    public void setWeight(double weight) {
-        this.weight = weight;
-    }
-
-    public List<Consultation> getConsultations() {
-        return consultations;
     }
 
     public void addConsultation(Consultation consultation) {
         consultations.add(consultation);
-    }
-
-    @Override
-    public String toString() {
-        return "Patient{" +
-                "height=" + height +
-                ", weight=" + weight +
-                '}';
     }
 }

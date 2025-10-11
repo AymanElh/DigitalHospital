@@ -1,6 +1,7 @@
 package com.youcode.digitalhospital.model;
 
 import jakarta.persistence.*;
+import lombok.*;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
@@ -9,6 +10,10 @@ import java.util.List;
 
 @Entity
 @Table(name = "doctors")
+@Getter
+@Setter
+@NoArgsConstructor
+@ToString(callSuper = true)
 public class Doctor extends User {
     @Column(name = "specialty", nullable = false, length = 150)
     private String specialty;
@@ -21,40 +26,9 @@ public class Doctor extends User {
     @Fetch(FetchMode.JOIN)
     private Department department;
 
-    // Constructors
     public Doctor(Long id, String firstName, String lastName, String email, String password, String specialty) {
-        super(id, firstName, lastName, email, password, RoleEnum.DOCTOR);
+        super(id, firstName, lastName, email, password, null, RoleEnum.DOCTOR, null, null);
         this.specialty = specialty;
-    }
-
-    public Doctor() {
-        super();
-        setRole(RoleEnum.DOCTOR);
-    }
-
-    // Getters and setters
-    public List<Consultation> getConsultationList() {
-        return consultationList;
-    }
-
-    public void setConsultationList(List<Consultation> consultationList) {
-        this.consultationList = consultationList;
-    }
-
-    public String getSpecialty() {
-        return specialty;
-    }
-
-    public void setSpecialty(String specialty) {
-        this.specialty = specialty;
-    }
-
-    public Department getDepartment() {
-        return department;
-    }
-
-    public void setDepartment(Department department) {
-        this.department = department;
     }
 
     public List<Consultation> getConsultatoins() {
@@ -63,13 +37,5 @@ public class Doctor extends User {
 
     public void addConsultation(Consultation consultation) {
         this.consultationList.add(consultation);
-    }
-
-    @Override
-    public String toString() {
-        return super.toString() + "Doctor{" +
-                "specialty='" + specialty + '\'' +
-                ", consultationList=" + consultationList +
-                '}';
     }
 }

@@ -1,14 +1,17 @@
 package com.youcode.digitalhospital.model;
 
 import jakarta.persistence.*;
-import org.hibernate.annotations.Type;
-import org.hibernate.dialect.type.PostgreSQLEnumJdbcType;
+import lombok.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "consultations")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class Consultation {
 
     @Id
@@ -59,74 +62,14 @@ public class Consultation {
         this.reason = reason;
     }
 
-    public Consultation() {}
-
-    public LocalDate getConsultationDate() {
-        return consultationDate;
+    @PrePersist
+    protected void onCreate() {
+        createdAt = LocalDateTime.now();
+        updatedAt = LocalDateTime.now();
     }
 
-    public void setConsultationDate(LocalDate consultationDate) {
-        this.consultationDate = consultationDate;
+    @PreUpdate
+    protected void onUpdate() {
+        updatedAt = LocalDateTime.now();
     }
-
-    public LocalDateTime getConsultationTime() {
-        return consultationTime;
-    }
-
-    public void setConsultationTime(LocalDateTime consultationTime) {
-        this.consultationTime = consultationTime;
-    }
-
-    public ConsultationStatus getConsultationStatus() {
-        return consultationStatus;
-    }
-
-    public void setConsultationStatus(ConsultationStatus consultationStatus) {
-        this.consultationStatus = consultationStatus;
-    }
-
-    public Doctor getDoctor() {
-        return doctor;
-    }
-
-    public void setDoctor(Doctor doctor) {
-        this.doctor = doctor;
-    }
-
-    public String getMedicalReport() {
-        return medicalReport;
-    }
-
-    public void setMedicalReport(String medicalReport) {
-        this.medicalReport = medicalReport;
-    }
-
-    public Patient getPatient() {
-        return patient;
-    }
-
-    public void setPatient(Patient patient) {
-        this.patient = patient;
-    }
-
-    public String getReason() {
-        return reason;
-    }
-
-    public void setReason(String reason) {
-        this.reason = reason;
-    }
-
-    public ConsultationSlot getSlot() {
-        return slot;
-    }
-
-    public void setSlot(ConsultationSlot slot) {
-        this.slot = slot;
-    }
-
-    public LocalDateTime getCreatedAt() {return createdAt;}
-
-    public LocalDateTime getUpdatedAt() {return updatedAt;}
 }
-

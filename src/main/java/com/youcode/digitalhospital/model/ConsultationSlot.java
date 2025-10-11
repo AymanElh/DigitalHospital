@@ -1,17 +1,21 @@
 package com.youcode.digitalhospital.model;
 
 import jakarta.persistence.*;
-import org.hibernate.FetchMode;
-import org.hibernate.annotations.Fetch;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "slots")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class ConsultationSlot {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     @OneToOne(mappedBy = "slot")
     private Consultation consultation;
 
@@ -31,6 +35,8 @@ public class ConsultationSlot {
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
 
-
+    @PrePersist
+    protected void onCreate() {
+        createdAt = LocalDateTime.now();
+    }
 }
-

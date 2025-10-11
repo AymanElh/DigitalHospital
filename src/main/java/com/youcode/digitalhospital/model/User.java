@@ -1,11 +1,20 @@
 package com.youcode.digitalhospital.model;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "users")
 @Inheritance(strategy = InheritanceType.JOINED)
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public abstract class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -13,6 +22,7 @@ public abstract class User {
 
     @Column(name = "first_name", nullable = false, length = 100)
     protected String firstName;
+
     @Column(name = "last_name", nullable = false, length = 100)
     protected String lastName;
 
@@ -31,94 +41,23 @@ public abstract class User {
 
     @Column(name = "created_at", updatable = false)
     protected LocalDateTime createdAt;
+
     @Column(name = "updated_at")
     protected LocalDateTime updatedAt;
-
-    // Constructors
-    public User(Long id, String firstName, String lastName, String email, String password, RoleEnum role) {
-        this.id = id;
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.email = email;
-        this.password = password;
-        this.role = role;
-    }
-
-    public User() {
-    }
-
-    // Getters and setters
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getFirstName() {
-        return firstName;
-    }
-
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public RoleEnum getRole() {
-        return role;
-    }
-
-    public void setRole(RoleEnum role) {
-        this.role = role;
-    }
-
-    public String getLastName() {
-        return lastName;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
 
     // Helper methods
     public String getUserName() {
         return firstName + " " + lastName;
     }
-    public boolean isAdmin() {
-        return role == RoleEnum.ADMIN;
-    }
-    public boolean isDoctor() {
-        return role == RoleEnum.DOCTOR;
-    }
-    public boolean isPatient() {
-        return role == RoleEnum.PATIENT;
+
+    @PrePersist
+    protected void onCreate() {
+        createdAt = LocalDateTime.now();
+        updatedAt = LocalDateTime.now();
     }
 
-    @Override
-    public String toString() {
-        return "User{" +
-                "id=" + id +
-                ", firstName='" + firstName + '\'' +
-                ", lastName='" + lastName + '\'' +
-                ", email='" + email + '\'' +
-                ", password='" + password + '\'' +
-                '}';
+    @PreUpdate
+    protected void onUpdate() {
+        updatedAt = LocalDateTime.now();
     }
 }
