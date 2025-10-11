@@ -1,8 +1,8 @@
 package com.youcode.digitalhospital.model;
 
 import jakarta.persistence.*;
-import org.hibernate.annotations.Type;
-import org.hibernate.dialect.type.PostgreSQLEnumJdbcType;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -21,6 +21,7 @@ public class Consultation {
 
     @ManyToOne
     @JoinColumn(name = "doctor_id", nullable = false)
+    @Fetch(FetchMode.JOIN)
     private Doctor doctor;
 
     @OneToOne

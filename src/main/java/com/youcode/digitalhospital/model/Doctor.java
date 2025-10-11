@@ -11,7 +11,7 @@ import java.util.List;
 @Table(name = "doctors")
 public class Doctor extends User {
     @Column(name = "specialty", nullable = false, length = 150)
-    private String specialty;
+    private String speciality;
 
     @OneToMany(mappedBy = "doctor")
     private List<Consultation> consultationList = new ArrayList<>();
@@ -22,9 +22,9 @@ public class Doctor extends User {
     private Department department;
 
     // Constructors
-    public Doctor(Long id, String firstName, String lastName, String email, String password, String specialty) {
+    public Doctor(Long id, String firstName, String lastName, String email, String password, String speciality) {
         super(id, firstName, lastName, email, password, RoleEnum.DOCTOR);
-        this.specialty = specialty;
+        this.speciality = speciality;
     }
 
     public Doctor() {
@@ -42,11 +42,11 @@ public class Doctor extends User {
     }
 
     public String getSpecialty() {
-        return specialty;
+        return speciality;
     }
 
-    public void setSpecialty(String specialty) {
-        this.specialty = specialty;
+    public void setSpecialty(String speciality) {
+        this.speciality = speciality;
     }
 
     public Department getDepartment() {
@@ -68,7 +68,7 @@ public class Doctor extends User {
     @Override
     public String toString() {
         return super.toString() + "Doctor{" +
-                "specialty='" + specialty + '\'' +
+                "speciality='" + speciality + '\'' +
                 ", consultationList=" + consultationList +
                 '}';
     }
