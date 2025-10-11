@@ -7,6 +7,36 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "slots")
+@NamedQueries({
+        @NamedQuery(
+                name = "ConsultationSlot.findAvailableByRoomAndDate",
+                query = "SELECT cs FROM ConsultationSlot cs WHERE cs.room.id = :roomId AND FUNCTION('DATE', cs.startTime) = FUNCTION('DATE', :date) AND cs.isCancelled = false AND cs.consultation IS NULL"
+        ),
+        @NamedQuery(
+                name = "ConsultationSlot.findCancelledSlots",
+                query = "SELECT cs FROM ConsultationSlot cs WHERE cs.isCancelled = true"
+        ),
+        @NamedQuery(
+                name = "ConsultationSlot.isAvailable",
+                query = "SELECT COUNT(cs) FROM ConsultationSlot cs WHERE cs.id = :slotId AND cs.isCancelled = false AND cs.consultation IS NULL"
+        ),
+        @NamedQuery(
+                name = "ConsultationSlot.findByRoom",
+                query = "SELECT cs FROM ConsultationSlot cs WHERE cs.room = :room"
+        ),
+        @NamedQuery(
+                name = "ConsultationSlot.findByRoomAndDateRange",
+                query = "SELECT cs FROM ConsultationSlot cs WHERE cs.room.id = :roomId AND cs.startTime >= :startDate AND cs.endTime <= :endDate"
+        ),
+        @NamedQuery(
+                name = "ConsultationSlot.countOccupied",
+                query = "SELECT COUNT(cs) FROM ConsultationSlot cs WHERE cs.consultation IS NOT NULL AND cs.isCancelled = false"
+        ),
+        @NamedQuery(
+                name = "ConsultationSlot.findByIdWithConsultation",
+                query = "SELECT cs FROM ConsultationSlot cs LEFT JOIN FETCH cs.consultation WHERE cs.id = :slotId"
+        )
+})
 @Getter
 @Setter
 @NoArgsConstructor
@@ -40,3 +70,4 @@ public class ConsultationSlot {
         createdAt = LocalDateTime.now();
     }
 }
+

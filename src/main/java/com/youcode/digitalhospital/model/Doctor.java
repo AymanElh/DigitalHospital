@@ -16,7 +16,7 @@ import java.util.List;
 @ToString(callSuper = true)
 public class Doctor extends User {
     @Column(name = "specialty", nullable = false, length = 150)
-    private String specialty;
+    private String speciality;
 
     @OneToMany(mappedBy = "doctor")
     private List<Consultation> consultationList = new ArrayList<>();
@@ -26,16 +26,4 @@ public class Doctor extends User {
     @Fetch(FetchMode.JOIN)
     private Department department;
 
-    public Doctor(Long id, String firstName, String lastName, String email, String password, String specialty) {
-        super(id, firstName, lastName, email, password, null, RoleEnum.DOCTOR, null, null);
-        this.specialty = specialty;
-    }
-
-    public List<Consultation> getConsultatoins() {
-        return this.consultationList;
-    }
-
-    public void addConsultation(Consultation consultation) {
-        this.consultationList.add(consultation);
-    }
 }
