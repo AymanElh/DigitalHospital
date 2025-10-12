@@ -12,6 +12,10 @@ import java.time.LocalDateTime;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@NamedQuery(
+        name = "Consultation.hasActiveConsultation",
+        query = "SELECT COUNT(c) FROM Consultation c WHERE c.doctor.id = :id AND c.consultationStatus IN (:status)"
+)
 public class Consultation {
 
     @Id
