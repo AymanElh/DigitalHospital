@@ -10,7 +10,7 @@ import java.util.Optional;
  * Repository interface for Department entity
  * Handles department-specific data access operations
  */
-public interface IDepartmentRepository {
+public interface IDepartmentRepository extends IGenericRepository<Department> {
 
     /**
      * Find a department by name

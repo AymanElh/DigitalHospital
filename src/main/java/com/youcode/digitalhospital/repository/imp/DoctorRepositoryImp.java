@@ -1,6 +1,7 @@
 package com.youcode.digitalhospital.repository.imp;
 
 import com.youcode.digitalhospital.config.JPAConfig;
+import com.youcode.digitalhospital.model.ConsultationStatus;
 import com.youcode.digitalhospital.model.Department;
 import com.youcode.digitalhospital.model.Doctor;
 import com.youcode.digitalhospital.repository.interfaces.IDoctorRepository;
@@ -15,10 +16,8 @@ public class DoctorRepositoryImp extends GenericRepositoryImp<Doctor> implements
     }
 
     @Override
-    public Optional<Doctor> findDoctorByEmail(String email) {
-        EntityManager em = null;
+    public Optional<Doctor> findDoctorByEmail(String email, EntityManager em) {
         try {
-            em = JPAConfig.getEntityManager();
             String jpql = "SELECT d FROM Doctor d WHERE d.email = :email";
             Doctor doctor = em.createQuery(jpql, Doctor.class)
                     .setParameter("email", email)
@@ -32,10 +31,8 @@ public class DoctorRepositoryImp extends GenericRepositoryImp<Doctor> implements
     }
 
     @Override
-    public List<Doctor> findByDepartment(Department department) {
-        EntityManager em = null;
+    public List<Doctor> findByDepartment(Department department, EntityManager em) {
         try {
-            em = JPAConfig.getEntityManager();
             String jpql = "SELECT d FROM Doctor d WHERE d.department.id = :depId";
             return em.createQuery(jpql, Doctor.class)
                     .setParameter("depId", department.getId())
@@ -46,11 +43,9 @@ public class DoctorRepositoryImp extends GenericRepositoryImp<Doctor> implements
     }
 
     @Override
-    public List<Doctor> findBySpeciality(String speciality) {
-        EntityManager em = null;
+    public List<Doctor> findBySpeciality(String speciality, EntityManager em) {
         try {
-            em = JPAConfig.getEntityManager();
-            String jpql = "SELECT d FROM Doctor d WHERE d.specialty = :specialty";
+            String jpql = "SELECT d FROM Doctor d WHERE d.speciality = :specialty";
             return em.createQuery(jpql, Doctor.class)
                     .setParameter("specialty", speciality)
                     .getResultList();
@@ -59,11 +54,16 @@ public class DoctorRepositoryImp extends GenericRepositoryImp<Doctor> implements
         }
     }
 
-    // Add method to match Main class call
-    public List<Doctor> findBySpecialty(String specialty, EntityManager em) {
-        String jpql = "SELECT d FROM Doctor d WHERE d.speciality = :specialty";
-        return em.createQuery(jpql, Doctor.class)
-                .setParameter("specialty", specialty)
-                .getResultList();
+    @Override
+    public boolean hasActiveConsultations(Long doctorId, EntityManager em) {
+        List<ConsultationStatus> activeStatues = List.of(
+                ConsultationStatus.RESERVED,
+                ConsultationStatus.VALIDATED
+        );
+
+        return em.createNamedQuery("Consultation.hasActiveConsultation", Long.class)
+                .setParameter("id", doctorId)
+                .setParameter("status", activeStatues)
+                .getSingleResult() > 0;
     }
 }

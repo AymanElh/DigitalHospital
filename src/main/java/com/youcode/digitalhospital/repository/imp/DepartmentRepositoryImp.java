@@ -7,7 +7,7 @@ import jakarta.persistence.EntityManager;
 import java.util.List;
 import java.util.Optional;
 
-public class DepartmentRepositoryImp extends GenericRepositoryImp implements IDepartmentRepository {
+public class DepartmentRepositoryImp extends GenericRepositoryImp<Department> implements IDepartmentRepository {
     public DepartmentRepositoryImp() {
         super(Department.class);
     }
