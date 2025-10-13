@@ -1,5 +1,6 @@
 package com.youcode.digitalhospital.repository.imp;
 
+import com.youcode.digitalhospital.model.Consultation;
 import com.youcode.digitalhospital.model.Patient;
 import com.youcode.digitalhospital.repository.interfaces.IPatientRepository;
 import jakarta.persistence.EntityManager;

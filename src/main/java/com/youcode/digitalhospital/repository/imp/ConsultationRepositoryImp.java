@@ -11,7 +11,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
-public class ConsultationRepositoryImp extends GenericRepositoryImp implements IConsultationRepository {
+public class ConsultationRepositoryImp extends GenericRepositoryImp<Consultation> implements IConsultationRepository {
 
     public ConsultationRepositoryImp() {
         super(Consultation.class);
@@ -125,12 +125,22 @@ public class ConsultationRepositoryImp extends GenericRepositoryImp implements I
     }
 
     @Override
-    public boolean hasConsultationAtTime(Long patientId, LocalDateTime dateTime, EntityManager em) {
-        String jpql = "SELECT COUNT(c) FROM Consultation c JOIN c.patient p WHERE p.id = :patientId AND c.consultationDate = :date AND c.slot.startTime <= :dateTime AND c.slot.endTime > :dateTime";
+    public boolean hasConsultationAtTime(Long patientId, LocalDate date, LocalDateTime dateTime, EntityManager em) {
+        String jpql = "SELECT COUNT(c) FROM Consultation c JOIN c.patient p WHERE p.id = :patientId AND c.consultationDate = :date AND c.startTime <= :dateTime AND c.endTime > :dateTime";
         Long count = em.createQuery(jpql, Long.class)
                 .setParameter("patientId", patientId)
-                .setParameter("date", dateTime.toLocalDate())
+                .setParameter("date", date)
                 .setParameter("dateTime", dateTime)
+                .getSingleResult();
+        return count > 0;
+    }
+
+    @Override
+    public boolean isConsultationSlotOccupied(LocalDate date, LocalDateTime time, EntityManager em) {
+        String jpql = "SELECT COUNT(c) FROM Consultation c WHERE c.consultationDate = :date AND c.startTime = :startTime AND c.endTime = :endTime";
+        Long count = em.createQuery(jpql, Long.class)
+                .setParameter("date", date)
+                .setParameter("startTime", time)
                 .getSingleResult();
         return count > 0;
     }

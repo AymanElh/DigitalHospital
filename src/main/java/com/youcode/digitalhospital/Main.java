@@ -32,7 +32,6 @@ public class Main {
             DoctorRepositoryImp doctorRepo = new DoctorRepositoryImp();
             PatientRepositoryImp patientRepo = new PatientRepositoryImp();
             RoomRepositoryImp roomRepo = new RoomRepositoryImp();
-            ConsultationSlotRepositoryImp slotRepo = new ConsultationSlotRepositoryImp();
             ConsultationRepositoryImp consultationRepo = new ConsultationRepositoryImp();
 
             // ==================== TEST 1: Department ==================== //
@@ -96,27 +95,15 @@ public class Main {
             System.out.println();
 
             // ==================== TEST 5: Consultation Slot ==================== //
-            System.out.println("TEST 5: Creating Consultation Slot...");
-            ConsultationSlot slot = new ConsultationSlot();
-            slot.setStartTime(LocalDateTime.now().plusDays(1).withHour(10).withMinute(0));
-            slot.setEndTime(LocalDateTime.now().plusDays(1).withHour(10).withMinute(30));
-            slot.setRoom(room);
-            slot.setCancelled(false);
-            em.persist(slot);
-            em.flush();
-            System.out.println("✓ Consultation Slot created with ID: " + slot.getId());
-            System.out.println("  Start Time: " + slot.getStartTime());
-            System.out.println("  End Time: " + slot.getEndTime());
-            System.out.println();
+
 
             // ==================== TEST 6: Consultation ==================== //
             System.out.println("TEST 6: Creating Consultation...");
             Consultation consultation = new Consultation();
             consultation.setPatient(patient);
             consultation.setDoctor(doctor);
-            consultation.setSlot(slot);
-            consultation.setConsultationDate(LocalDate.now().plusDays(1));
-            consultation.setConsultationTime(slot.getStartTime());
+            consultation.setStartTime(LocalDateTime.now().plusDays(1).withHour(10).withMinute(0));
+            consultation.setEntTime(LocalDateTime.now().plusDays(1).withHour(10).withMinute(30));
             consultation.setReason("Regular checkup");
             consultation.setConsultationStatus(ConsultationStatus.RESERVED);
             em.persist(consultation);
@@ -145,7 +132,7 @@ public class Main {
 
             // Test Doctor Repository
             System.out.println("TEST 7.2: Finding Doctors by Specialty...");
-            List<Doctor> cardiologists = doctorRepo.findBySpecialty("Cardiologist", em);
+            List<Doctor> cardiologists = doctorRepo.findBySpeciality("Cardiologist", em);
             System.out.println("✓ Found " + cardiologists.size() + " Cardiologist(s)");
             System.out.println();
 
@@ -165,8 +152,6 @@ public class Main {
 
             // Test Slot Repository
             System.out.println("TEST 7.5: Finding Available Slots...");
-            List<ConsultationSlot> availableSlots = slotRepo.findAvailableSlots(em);
-            System.out.println("✓ Found " + availableSlots.size() + " available slot(s)");
             System.out.println();
 
             // Test Consultation Repository
@@ -181,10 +166,6 @@ public class Main {
             System.out.println();
 
             // Test Slot Availability
-            System.out.println("TEST 7.8: Checking Slot Availability...");
-            boolean isAvailable = slotRepo.isSlotAvailable(slot.getId(), em);
-            System.out.println("✓ Slot ID " + slot.getId() + " is available: " + !isAvailable + " (occupied by consultation)");
-            System.out.println();
 
             System.out.println("==============================================");
             System.out.println("All Repository Tests Completed Successfully!");

@@ -14,7 +14,7 @@ import java.util.List;
  * Repository interface for Consultation entity
  * Handles consultation-specific data access operations
  */
-public interface IConsultationRepository {
+public interface IConsultationRepository extends IGenericRepository<Consultation> {
 
     /**
      * Find all consultations for a specific patient
@@ -130,5 +130,7 @@ public interface IConsultationRepository {
      * @param em EntityManager
      * @return True if patient has consultation at that time
      */
-    boolean hasConsultationAtTime(Long patientId, LocalDateTime dateTime, EntityManager em);
+    boolean hasConsultationAtTime(Long patientId, LocalDate date, LocalDateTime dateTime, EntityManager em);
+
+    boolean isConsultationSlotOccupied(LocalDate date, LocalDateTime time, EntityManager em);
 }
