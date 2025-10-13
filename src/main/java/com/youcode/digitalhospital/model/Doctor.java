@@ -30,4 +30,7 @@ public class Doctor extends User {
     @Fetch(FetchMode.JOIN)
     private Department department;
 
+    @OneToOne
+    @JoinColumn(name = "room_id", referencedColumnName = "id")
+    private Room room;
 }

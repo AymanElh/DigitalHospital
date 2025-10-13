@@ -24,6 +24,10 @@ public class Room {
     @Column(name = "is_available", nullable = false)
     private boolean isAvailable = true;
 
+    @OneToOne(mappedBy = "room")
+    private Doctor doctor;
+
+
     @OneToMany(mappedBy = "room", fetch = FetchType.LAZY)
     private List<ConsultationSlot> slots = new ArrayList<>();
 
