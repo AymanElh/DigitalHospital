@@ -30,15 +30,14 @@ public class Consultation {
     @JoinColumn(name = "doctor_id", nullable = false)
     private Doctor doctor;
 
-    @OneToOne
-    @JoinColumn(name = "slot_id", nullable = false, unique = true)
-    private ConsultationSlot slot;
-
     @Column(name = "consultation_date", nullable = false)
     private LocalDate consultationDate;
 
-    @Column(name = "consultation_time", nullable = false)
-    private LocalDateTime consultationTime;
+    @Column(name = "start_time", nullable = false)
+    private LocalDateTime startTime;
+
+    @Column(name = "end_time", nullable = false)
+    private LocalDateTime entTime;
 
     @Column(nullable = false, columnDefinition = "TEXT")
     private String reason;
@@ -59,10 +58,9 @@ public class Consultation {
     @Column(name = "validated_at")
     private LocalDateTime validatedAt;
 
-    public Consultation(Patient patient, Doctor doctor, ConsultationSlot slot, String reason) {
+    public Consultation(Patient patient, Doctor doctor, String reason) {
         this.patient = patient;
         this.doctor = doctor;
-        this.slot = slot;
         this.reason = reason;
     }
 

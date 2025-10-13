@@ -27,10 +27,6 @@ public class Room {
     @OneToOne(mappedBy = "room")
     private Doctor doctor;
 
-
-    @OneToMany(mappedBy = "room", fetch = FetchType.LAZY)
-    private List<ConsultationSlot> slots = new ArrayList<>();
-
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 
