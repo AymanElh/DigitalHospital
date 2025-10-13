@@ -30,14 +30,12 @@ public class Consultation {
     @JoinColumn(name = "doctor_id", nullable = false)
     private Doctor doctor;
 
-    @Column(name = "consultation_date", nullable = false)
+    @Column(name = "date", nullable = false)
     private LocalDate consultationDate;
 
-    @Column(name = "start_time", nullable = false)
-    private LocalDateTime startTime;
-
-    @Column(name = "end_time", nullable = false)
-    private LocalDateTime entTime;
+    @OneToOne
+    @JoinColumn(name = "consultation_slot_id", nullable = false, unique = true)
+    private ConsultationSlot consultationSlot;
 
     @Column(nullable = false, columnDefinition = "TEXT")
     private String reason;
@@ -58,6 +56,9 @@ public class Consultation {
     @Column(name = "validated_at")
     private LocalDateTime validatedAt;
 
+    @Column(name = "completed_at")
+    private LocalDateTime completedAt;
+
     public Consultation(Patient patient, Doctor doctor, String reason) {
         this.patient = patient;
         this.doctor = doctor;
@@ -74,4 +75,24 @@ public class Consultation {
     protected void onUpdate() {
         updatedAt = LocalDateTime.now();
     }
+
+    public LocalDateTime getStartTime() {
+        return consultationSlot != null ? this.consultationSlot.getStartTime() : null;
+    }
+
+    public LocalDateTime getEndTime() {
+        return consultationSlot != null ? this.consultationSlot.getEndTime() : null;
+    }
+
+    public void completeConsultation(String report) {
+        this.medicalReport = report;
+        this.consultationStatus = ConsultationStatus.COMPLETED;
+        this.completedAt = LocalDateTime.now();
+    }
+
+    public void confirm() {
+        this.consultationStatus = ConsultationStatus.VALIDATED;
+        this.validatedAt = LocalDateTime.now();
+    }
+
 }
