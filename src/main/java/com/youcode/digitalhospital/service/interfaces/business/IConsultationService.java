@@ -10,17 +10,15 @@ import java.util.List;
 public interface IConsultationService {
     // Patient side
     List<Consultation> getPatientHistory(Long patientId) throws Exception;
-    Consultation bookConsultation(Long patientId, Long doctorId, LocalDate date, LocalDateTime startTime, LocalDateTime endTime, String reason) throws Exception;
+    Consultation bookConsultation(Long patientId, Long slotId, String reason) throws Exception;
     Consultation modifyConsultation(Long consultationId, LocalDate date, LocalDateTime time, String reason) throws Exception;
-    Consultation cancelConsultationByPatient(Long id, Long patientId);
-    Consultation validateConsultation(Long consultationId, Long patientId);
-    boolean isAvailableConsultation(Long doctorId, LocalDate consultationDate, LocalDateTime startTime, LocalDateTime endTime);
-
+    Consultation cancelConsultationByPatient(Long id, Long patientId, Long slotId) throws Exception;
+    Consultation validateConsultation(Long consultationId, Long patientId) throws Exception;
 
     List<Consultation> getBookedConsultationOnDate(LocalDate date, Long doctorId);
 
     // Doctor side
-    List<Consultation> getDoctorPlaning(Long doctorId);
+    List<Consultation> getDoctorPlaning(Long doctorId, LocalDate date);
     List<Consultation> getPlanningConsultations(Long doctorId);
     Consultation refuseConsultation(Long consultationId, Long doctorId);
     Consultation updateConsultationStatus(Long consultationId, ConsultationStatus status, Long doctorId);

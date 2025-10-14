@@ -39,6 +39,12 @@ public class ConsultationSlot {
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 
+    public ConsultationSlot(Doctor doctor, LocalDateTime startTime, LocalDateTime endTime) {
+        this.doctor = doctor;
+        this.startTime = startTime;
+        this.endTime = endTime;
+    }
+
     @PrePersist
     public void onCreate() {
         this.createdAt = LocalDateTime.now();
