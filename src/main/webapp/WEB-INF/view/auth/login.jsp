@@ -58,6 +58,9 @@
                             class="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded text-white placeholder-gray-400 focus:outline-none focus:border-blue-600 transition"
                             placeholder="Enter your email">
                         <!-- TODO: Display validation error if email is invalid - ${errors.email} -->
+                        <c:if test="${not empty errors.email}">
+                            <p class="text-red-400 text-sm mt-1"><c:out value="${errors.email}" /></p>
+                        </c:if>
                     </div>
 
                     <!-- Password Field -->
@@ -73,6 +76,9 @@
                             class="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded text-white placeholder-gray-400 focus:outline-none focus:border-blue-600 transition"
                             placeholder="Enter your password">
                         <!-- TODO: Display validation error if password is invalid - ${errors.password} -->
+                        <c:if test="${not empty errors.password}">
+                            <p class="text-red-400 text-sm mt-1"><c:out value="${errors.password}" /></p>
+                        </c:if>
                     </div>
 
                     <!-- Remember Me & Forgot Password -->

@@ -13,6 +13,8 @@ public interface IConsultationService {
     Consultation bookConsultation(Long patientId, Long slotId, String reason) throws Exception;
     Consultation modifyConsultation(Long consultationId, LocalDate date, LocalDateTime time, String reason) throws Exception;
     Consultation cancelConsultationByPatient(Long id, Long patientId, Long slotId) throws Exception;
+
+
     Consultation validateConsultation(Long consultationId, Long patientId) throws Exception;
 
     List<Consultation> getBookedConsultationOnDate(LocalDate date, Long doctorId);

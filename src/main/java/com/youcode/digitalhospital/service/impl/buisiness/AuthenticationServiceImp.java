@@ -1,6 +1,7 @@
 package com.youcode.digitalhospital.service.impl.buisiness;
 
 import com.youcode.digitalhospital.config.JPAConfig;
+import com.youcode.digitalhospital.dto.LoginDTO;
 import com.youcode.digitalhospital.dto.RegisterPatientDTO;
 import com.youcode.digitalhospital.model.Patient;
 import com.youcode.digitalhospital.model.RoleEnum;
@@ -19,7 +20,9 @@ public class AuthenticationServiceImp implements IAuthenticationService {
     IPatientRepository patientRepo;
 
     @Override
-    public User login(String email, String password) {
+    public User login(LoginDTO dto) {
+        String email = dto.getEmail();
+        String password = dto.getPassword();
         if(email == null || email.trim().isEmpty()) {
             throw new IllegalArgumentException("Email is required");
         }

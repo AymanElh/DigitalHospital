@@ -19,7 +19,7 @@
     <main>
         <!-- Success/Error Messages - Only show if they exist -->
         <c:if test="${not empty sessionScope.successMessage}">
-            <div class="container mx-auto px-4 mt-4">
+            <div id="successMessage" class="container mx-auto px-4 mt-4 mb-2">
                 <div class="bg-green-900 border border-green-600 text-green-100 px-4 py-3 rounded">
                     <c:out value="${sessionScope.successMessage}" />
                 </div>
@@ -28,7 +28,7 @@
         </c:if>
 
         <c:if test="${not empty sessionScope.errorMessage}">
-            <div class="container mx-auto px-4 mt-4">
+            <div id="errorMessage" class="container mx-auto px-4 mt-4">
                 <div class="bg-red-900 border border-red-600 text-red-100 px-4 py-3 rounded">
                     <c:out value="${sessionScope.errorMessage}" />
                 </div>
@@ -47,16 +47,58 @@
                         Your health is our priority. Book appointments with our expert doctors,
                         manage your consultations and access your medical records with ease.
                     </p>
-                    <div class="flex flex-col sm:flex-row gap-4 justify-center">
-                        <a href="${pageContext.request.contextPath}/register"
-                           class="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded font-semibold transition">
-                            Register
-                        </a>
-                        <a href="${pageContext.request.contextPath}/doctors"
-                           class="bg-gray-700 hover:bg-gray-600 text-white px-8 py-3 rounded font-semibold transition">
-                            Find a Doctor
-                        </a>
-                    </div>
+
+                    <!-- Show different buttons based on login status -->
+                    <c:choose>
+                        <c:when test="${not empty sessionScope.user}">
+                            <!-- Logged in users - Show role-specific buttons -->
+                            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                                <c:if test="${sessionScope.user.role == 'PATIENT'}">
+                                    <a href="${pageContext.request.contextPath}/patient/appointments"
+                                       class="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded font-semibold transition">
+                                        My Appointments
+                                    </a>
+                                    <a href="${pageContext.request.contextPath}/doctors"
+                                       class="bg-gray-700 hover:bg-gray-600 text-white px-8 py-3 rounded font-semibold transition">
+                                        Find a Doctor
+                                    </a>
+                                </c:if>
+                                <c:if test="${sessionScope.user.role == 'DOCTOR'}">
+                                    <a href="${pageContext.request.contextPath}/doctor/dashboard"
+                                       class="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded font-semibold transition">
+                                        Go to Dashboard
+                                    </a>
+                                    <a href="${pageContext.request.contextPath}/doctor/consultations"
+                                       class="bg-gray-700 hover:bg-gray-600 text-white px-8 py-3 rounded font-semibold transition">
+                                        My Consultations
+                                    </a>
+                                </c:if>
+                                <c:if test="${sessionScope.user.role == 'ADMIN'}">
+                                    <a href="${pageContext.request.contextPath}/admin/dashboard"
+                                       class="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded font-semibold transition">
+                                        Admin Dashboard
+                                    </a>
+                                    <a href="${pageContext.request.contextPath}/admin/statistics"
+                                       class="bg-gray-700 hover:bg-gray-600 text-white px-8 py-3 rounded font-semibold transition">
+                                        View Statistics
+                                    </a>
+                                </c:if>
+                            </div>
+                        </c:when>
+                        <c:otherwise>
+                            <!-- Not logged in - Show register and find doctor buttons -->
+                            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                                <a href="${pageContext.request.contextPath}/register"
+                                   class="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded font-semibold transition">
+                                    Register
+                                </a>
+                                <a href="${pageContext.request.contextPath}/doctors"
+                                   class="bg-gray-700 hover:bg-gray-600 text-white px-8 py-3 rounded font-semibold transition">
+                                    Find a Doctor
+                                </a>
+                            </div>
+                        </c:otherwise>
+                    </c:choose>
                 </div>
             </div>
         </section>
@@ -267,5 +309,24 @@
     <!-- Include Footer -->
     <jsp:include page="/WEB-INF/view/common/footer.jsp" />
 
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const successMessage = document.getElementById("successMessage");
+            const errorMessage = document.getElementById("errorMessage");
+
+            function hideMessage(message) {
+                if(message) {
+                    setTimeout(() => {
+                        message.style.opacity = "0";
+                        message.style.transition = "opacity 0.5s ease";
+                        setTimeout(() => message.remove(), 500);
+                    }, 5000);
+                }
+            }
+
+            hideMessage(successMessage);
+            hideMessage(errorMessage);
+        })
+    </script>
 </body>
 </html>
