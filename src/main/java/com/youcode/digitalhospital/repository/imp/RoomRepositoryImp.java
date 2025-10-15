@@ -2,12 +2,14 @@ package com.youcode.digitalhospital.repository.imp;
 
 import com.youcode.digitalhospital.model.Room;
 import com.youcode.digitalhospital.repository.interfaces.IRoomRepository;
+import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.persistence.EntityManager;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
+@ApplicationScoped
 public class RoomRepositoryImp implements IRoomRepository {
 
     private static final String FIND_AVAILABLE_ROOMS_JPQL = "SELECT r FROM Room r WHERE r.isAvailable = true";

@@ -7,6 +7,7 @@ import com.youcode.digitalhospital.model.RoleEnum;
 import com.youcode.digitalhospital.repository.interfaces.IDepartmentRepository;
 import com.youcode.digitalhospital.repository.interfaces.IDoctorRepository;
 import com.youcode.digitalhospital.service.interfaces.entity.IDoctorService;
+import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityTransaction;
@@ -14,6 +15,7 @@ import jakarta.persistence.EntityTransaction;
 import java.util.List;
 import java.util.Optional;
 
+@ApplicationScoped
 public class DoctorServiceImp implements IDoctorService {
 
     @Inject

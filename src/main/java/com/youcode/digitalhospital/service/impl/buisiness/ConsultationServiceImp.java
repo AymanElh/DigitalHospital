@@ -6,6 +6,7 @@ import com.youcode.digitalhospital.repository.interfaces.IConsultationRepository
 import com.youcode.digitalhospital.repository.interfaces.IDoctorRepository;
 import com.youcode.digitalhospital.repository.interfaces.IPatientRepository;
 import com.youcode.digitalhospital.service.interfaces.business.IConsultationService;
+import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityTransaction;
@@ -15,6 +16,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@ApplicationScoped
 public class ConsultationServiceImp implements IConsultationService {
 
     @Inject

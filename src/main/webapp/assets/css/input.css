@@ -1,0 +1,36 @@
+@import "tailwindcss";
+
+/* Tailwind v4: declare content sources */
+@source "../../**/*.jsp";
+@source "../../**/*.html";
+@source "../../**/*.js";
+
+/* Tailwind v4: custom theme tokens (colors, fonts, etc.) */
+@theme {
+  --color-hospital-primary: #2563eb;
+  --color-hospital-secondary: #1e40af;
+  --color-hospital-accent: #f59e0b;
+  --color-hospital-success: #10b981;
+  --color-hospital-danger: #ef4444;
+
+  --font-sans: "Inter", system-ui, sans-serif;
+}
+
+
+/* Optional: utilities extension
+   You can also extend via tailwind.config.js theme.extend
+*/
+
+/* Custom hospital styles */
+.hospital-card {
+    @apply bg-white rounded-lg shadow-md p-6 border-l-4 border-hospital-primary;
+}
+
+.btn-primary {
+    @apply bg-hospital-primary text-white px-4 py-2 rounded-lg hover:bg-hospital-secondary transition-colors;
+    @apply bg-white rounded-lg shadow-md p-6 border-l-4 border-hospital-primary;
+}
+.btn-secondary {
+    @apply bg-gray-200 text-gray-800 px-4 py-2 rounded-lg hover:bg-gray-300 transition-colors;
+    @apply bg-hospital-primary text-white px-4 py-2 rounded-lg hover:bg-hospital-secondary transition-colors;
+}

@@ -102,8 +102,8 @@ public class Main {
             Consultation consultation = new Consultation();
             consultation.setPatient(patient);
             consultation.setDoctor(doctor);
-            consultation.setStartTime(LocalDateTime.now().plusDays(1).withHour(10).withMinute(0));
-            consultation.setEntTime(LocalDateTime.now().plusDays(1).withHour(10).withMinute(30));
+//            consultation.setStartTime(LocalDateTime.now().plusDays(1).withHour(10).withMinute(0));
+//            consultation.setEntTime(LocalDateTime.now().plusDays(1).withHour(10).withMinute(30));
             consultation.setReason("Regular checkup");
             consultation.setConsultationStatus(ConsultationStatus.RESERVED);
             em.persist(consultation);

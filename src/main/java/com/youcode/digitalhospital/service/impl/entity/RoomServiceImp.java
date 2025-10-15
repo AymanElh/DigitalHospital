@@ -5,6 +5,7 @@ import com.youcode.digitalhospital.model.Room;
 import com.youcode.digitalhospital.repository.imp.RoomRepositoryImp;
 import com.youcode.digitalhospital.repository.interfaces.IRoomRepository;
 import com.youcode.digitalhospital.service.interfaces.entity.IRoomService;
+import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityTransaction;
 
@@ -12,6 +13,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
+@ApplicationScoped
 public class RoomServiceImp implements IRoomService {
 
     private final IRoomRepository roomRepository;

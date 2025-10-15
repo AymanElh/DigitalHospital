@@ -5,11 +5,13 @@ import com.youcode.digitalhospital.model.ConsultationStatus;
 import com.youcode.digitalhospital.model.Department;
 import com.youcode.digitalhospital.model.Doctor;
 import com.youcode.digitalhospital.repository.interfaces.IDoctorRepository;
+import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.persistence.EntityManager;
 
 import java.util.List;
 import java.util.Optional;
 
+@ApplicationScoped
 public class DoctorRepositoryImp extends GenericRepositoryImp<Doctor> implements IDoctorRepository {
     public DoctorRepositoryImp() {
         super(Doctor.class);

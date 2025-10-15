@@ -5,6 +5,7 @@ import com.youcode.digitalhospital.model.Patient;
 import com.youcode.digitalhospital.repository.imp.PatientRepositoryImp;
 import com.youcode.digitalhospital.repository.interfaces.IPatientRepository;
 import com.youcode.digitalhospital.service.interfaces.entity.IPatientService;
+import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityTransaction;
@@ -12,6 +13,7 @@ import jakarta.persistence.EntityTransaction;
 import java.util.List;
 import java.util.Optional;
 
+@ApplicationScoped
 public class PatientServiceImp implements IPatientService {
 
     @Inject
