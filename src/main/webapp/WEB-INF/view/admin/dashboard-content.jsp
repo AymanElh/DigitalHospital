@@ -202,13 +202,3 @@
         </div>
     </div>
 </div>
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-
-<!-- TODO: Set these attributes in the servlet before forwarding -->
-<c:set var="pageTitle" value="Dashboard" scope="request"/>
-<c:set var="activePage" value="dashboard" scope="request"/>
-<c:set var="contentPage" value="/WEB-INF/view/admin/dashboard-content.jsp" scope="request"/>
-
-<jsp:include page="/WEB-INF/view/layout/admin-layout.jsp"/>
-
