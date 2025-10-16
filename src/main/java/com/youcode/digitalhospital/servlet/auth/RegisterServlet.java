@@ -1,6 +1,6 @@
 package com.youcode.digitalhospital.servlet.auth;
 
-import com.youcode.digitalhospital.dto.RegisterPatientDTO;
+import com.youcode.digitalhospital.dto.auth.RegisterPatientDTO;
 import com.youcode.digitalhospital.model.User;
 import com.youcode.digitalhospital.service.interfaces.business.IAuthenticationService;
 import com.youcode.digitalhospital.util.ValidationUtil;

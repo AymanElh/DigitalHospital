@@ -1,6 +1,6 @@
 package com.youcode.digitalhospital.servlet.auth;
 
-import com.youcode.digitalhospital.dto.LoginDTO;
+import com.youcode.digitalhospital.dto.auth.LoginDTO;
 import com.youcode.digitalhospital.model.User;
 import com.youcode.digitalhospital.service.interfaces.business.IAuthenticationService;
 import com.youcode.digitalhospital.util.ValidationUtil;
@@ -69,6 +69,8 @@ public class LoginServlet extends HttpServlet {
             System.out.println("Error on login: " + e.getMessage());
             Map<String, String> error = new HashMap<>();
             error.put("error", "Login failed: " + e.getMessage());
+            req.setAttribute("error", error);
+            req.getRequestDispatcher("/WEB-INF/view/auth/login.jsp").forward(req, resp);
         }
     }
 }

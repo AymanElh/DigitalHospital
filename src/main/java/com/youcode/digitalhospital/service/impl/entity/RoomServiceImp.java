@@ -24,6 +24,7 @@ public class RoomServiceImp implements IRoomService {
 
     @Override
     public Room addNewRoom(Room room) {
+        System.out.println("Calling the service");
         if (room == null) {
             throw new IllegalArgumentException("Room cannot be null");
         }
@@ -35,26 +36,26 @@ public class RoomServiceImp implements IRoomService {
 
         // Check if room number already exists
         EntityManager em = JPAConfig.getEntityManager();
-        try {
-            Optional<Room> existingRoom = roomRepository.findByRoomNumber(room.getRoomNumber(), em);
-            if (existingRoom.isPresent()) {
-                throw new IllegalArgumentException("Room with number " + room.getRoomNumber() + " already exists");
-            }
-        } catch (Exception e) {
-            // Room not found is expected, continue
-        } finally {
-            em.close();
+
+        System.out.println("Checking for room number: " + room.getRoomNumber());
+        Optional<Room> existingRoom = roomRepository.findByRoomNumber(room.getRoomNumber(), em);
+        if(existingRoom.isPresent()) {
+            System.out.println("Existing room is present");
         }
+
+        existingRoom.ifPresent(r -> {
+            throw new IllegalArgumentException("Room with number: " + r.getRoomNumber() + " already exists");
+        });
+
 
         // Set room as available by default
         room.setAvailable(true);
 
         // Save room
-        EntityManager emSave = JPAConfig.getEntityManager();
-        EntityTransaction transaction = emSave.getTransaction();
+        EntityTransaction transaction = em.getTransaction();
         try {
             transaction.begin();
-            emSave.persist(room);
+            em.persist(room);
             transaction.commit();
             return room;
         } catch (Exception e) {
@@ -63,7 +64,7 @@ public class RoomServiceImp implements IRoomService {
             }
             throw new RuntimeException("Error saving room: " + e.getMessage(), e);
         } finally {
-            emSave.close();
+            em.close();
         }
     }
 

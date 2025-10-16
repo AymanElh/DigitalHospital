@@ -1,4 +1,4 @@
-package com.youcode.digitalhospital.dto.request;
+package com.youcode.digitalhospital.dto.auth;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;

@@ -4,6 +4,7 @@ import com.youcode.digitalhospital.model.Room;
 import com.youcode.digitalhospital.repository.interfaces.IRoomRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.NoResultException;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -24,10 +25,17 @@ public class RoomRepositoryImp implements IRoomRepository {
 
     @Override
     public Optional<Room> findByRoomNumber(Long roomNumber, EntityManager em) {
-        Room room =  em.createQuery(FIND_BY_ROOM_NUMBER_JPQL, Room.class)
-                .setParameter("roomNumber", roomNumber)
-                .getSingleResult();
-        return Optional.ofNullable(room);
+        System.out.println("Calling repository");
+        try {
+            Room room = em.createQuery(FIND_BY_ROOM_NUMBER_JPQL, Room.class)
+                    .setParameter("roomNumber", roomNumber)
+                    .getSingleResult();
+            System.out.println("Search room by number:" + room);
+            return Optional.of(room);
+        } catch (NoResultException e) {
+            System.out.println("No room found for with room number: " + roomNumber);
+            return Optional.empty();
+        }
     }
 
     @Override
