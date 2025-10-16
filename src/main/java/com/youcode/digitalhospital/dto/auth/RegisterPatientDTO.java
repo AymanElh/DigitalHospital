@@ -1,4 +1,4 @@
-package com.youcode.digitalhospital.dto;
+package com.youcode.digitalhospital.dto.request;
 
 import jakarta.validation.constraints.*;
 import lombok.Getter;

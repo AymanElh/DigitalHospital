@@ -32,6 +32,7 @@
                 </c:if>
 
                 <!-- Display success message if exists (e.g., after registration) -->
+                <div><% request.getAttribute("error"); %></div>
                 <c:if test="${not empty sessionScope.successMessage}">
                     <div class="bg-green-900 border border-green-600 text-green-100 px-4 py-3 rounded mb-6">
                         <c:out value="${sessionScope.successMessage}" />
