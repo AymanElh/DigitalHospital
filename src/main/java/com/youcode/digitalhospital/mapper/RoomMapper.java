@@ -10,6 +10,9 @@ public class RoomMapper {
         }
 
         Room room = new Room();
+        if(roomDTO.getId() != null) {
+            room.setId(roomDTO.getId());
+        }
         room.setRoomNumber(roomDTO.getRoomNumber());
         room.setAvailable(roomDTO.getIsAvailable());
 

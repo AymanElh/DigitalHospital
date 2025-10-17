@@ -133,9 +133,12 @@ public class RoomServlet extends HttpServlet {
     }
 
     // Update room
-    private void updateRoom(HttpServletRequest req, HttpServletResponse resp) {
+    private void updateRoom(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         try {
+            System.out.println(req.getParameter("id"));
             String roomNumberStr = req.getParameter("roomNumber");
+            String roomIdStr = req.getParameter("id"); // Changed from "roomId" to "id"
+
             RoomDTO roomDTO = new RoomDTO();
             System.out.println("updating room: " + roomDTO);
 
@@ -147,7 +150,16 @@ public class RoomServlet extends HttpServlet {
                 req.getSession().setAttribute("error", "Invalid room number type");
             }
 
+            try {
+                Long roomId = Long.parseLong(roomIdStr);
+                roomDTO.setId(roomId);
+            } catch (NumberFormatException e) {
+                System.out.println(e.getMessage());
+                req.getSession().setAttribute("error", "Invalid room number type");
+            }
+
             roomDTO.setIsAvailable(true);
+            System.out.println("Room dto: " + roomDTO.getId());
 
             Map<String, String> errors = ValidationUtil.validate(roomDTO);
             if (!errors.isEmpty()) {
@@ -157,17 +169,22 @@ public class RoomServlet extends HttpServlet {
                 return;
             }
 
+            System.out.println("Call mapper to entity");
+            System.out.println(RoomMapper.toEntity(roomDTO));
             Room room = roomService.updateRoom(RoomMapper.toEntity(roomDTO));
+            System.out.println("udpated room: " + room);
             System.out.println("new room inserted: " + room);
             if (room != null) {
                 System.out.println("Room inserted successfully");
-                req.getSession().setAttribute("successMessage", "Room created successfully");
+                req.getSession().setAttribute("successMessage", "Room udpated successfully");
                 resp.sendRedirect(req.getContextPath() + "/admin/rooms");
             }
         } catch (IOException e) {
             req.getSession().setAttribute("error", "Error on request");
         } catch (Exception e) {
-            req.getSession().setAttribute("error", e.getMessage());
+            e.printStackTrace();
+            req.getSession().setAttribute("errorMessage", e.getMessage());
+            resp.sendRedirect(req.getContextPath() + "/admin/rooms");
         }
     }
 }
