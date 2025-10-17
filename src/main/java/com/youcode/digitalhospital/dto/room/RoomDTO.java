@@ -1,7 +1,6 @@
 package com.youcode.digitalhospital.dto.room;
 
 import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.AllArgsConstructor;
@@ -18,6 +17,9 @@ public class RoomDTO {
     @Positive(message = "Room must be positive")
     @Min(value = 1, message = "Room must be at least 1")
     private Long roomNumber;
+
+    private Long id;
+
 
     private Boolean isAvailable;
 }

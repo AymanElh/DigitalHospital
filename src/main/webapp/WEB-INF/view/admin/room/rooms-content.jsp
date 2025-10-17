@@ -114,7 +114,7 @@
             <c:choose>
                 <c:when test="${not empty rooms}">
                     <c:forEach var="room" items="${rooms}">
-                        <tr class="hover:bg-gray-750 transition">
+                        <tr class="hover:bg-gray-750 transition" data-room-id="${room.id}">
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <div class="flex items-center space-x-3">
                                     <div class="bg-blue-600 w-10 h-10 rounded flex items-center justify-center">
@@ -247,28 +247,26 @@
                                                            class="text-white font-semibold"></span>?
                 This action cannot be undone.
             </p>
-
-            <form id="deleteForm" method="POST" action="${pageContext.request.contextPath}/admin/rooms/delete">
-                <input type="hidden" name="action" value="delete">
-                <input type="hidden" id="deleteId" name="id" value="">
-
-                <div class="flex justify-center space-x-3">
-                    <button type="button"
-                            onclick="closeDeleteModal()"
-                            class="px-6 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition">
-                        Cancel
-                    </button>
-                    <button type="submit"
-                            class="px-6 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition">
-                        Delete
-                    </button>
-                </div>
-            </form>
+            <div class="flex justify-center space-x-3">
+                <button type="button"
+                        onclick="closeDeleteModal()"
+                        class="px-6 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition">
+                    Cancel
+                </button>
+                <button type="button"
+                        id="confirmation-delete-btn"
+                        class="px-6 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition">
+                    Delete
+                </button>
+            </div>
         </div>
     </div>
 </div>
 
 <script>
+    let currentRoomId = null;
+    let currentRoomNumber = null;
+
     // Open create modal
     function openCreateModal() {
         document.getElementById('modalTitle').textContent = 'Add New Room';
@@ -302,14 +300,23 @@
 
     // Open delete confirmation
     function confirmDelete(id, roomNumber) {
-        document.getElementById('deleteId').value = id;
-        document.getElementById('deleteRoomNumber').textContent = roomNumber;
-        document.getElementById('deleteModal').classList.remove('hidden');
+        console.log(id, roomNumber);
+        if(id && roomNumber) {
+            // document.getElementById('deleteId').value = id;
+            document.getElementById('deleteRoomNumber').textContent = roomNumber;
+            document.getElementById('deleteModal').classList.remove('hidden');
+        } else {
+            console.error("Id or room number undefined");
+        }
+        currentRoomId = id;
+        currentRoomNumber = roomNumber
     }
 
     // Close delete modal
     function closeDeleteModal() {
         document.getElementById('deleteModal').classList.add('hidden');
+        currentRoomId = null
+        currentRoomNumber = null;
     }
 
     // Close modals on escape key
@@ -319,6 +326,36 @@
             closeDeleteModal();
         }
     });
+
+    // Send delete request with js
+    document.getElementById("confirmation-delete-btn").addEventListener("click", function() {
+        console.log(this);
+        if(currentRoomId) {
+            deleteRoom(currentRoomId, currentRoomNumber);
+        }
+    });
+
+    async function deleteRoom(id, number) {
+        try {
+            const resp = await fetch(`/admin/rooms?id=\${id}`, {
+                method: "DELETE",
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            });
+
+            if(resp.ok) {
+                console.log("Room deleted successfully")
+                const row = document.querySelector(`tr[data-room-id="\${id}"]`);
+                if(row) {
+                    row.remove();
+                }
+                closeDeleteModal()
+            }
+        } catch (err) {
+            console.error(err);
+        }
+    }
 
     // Auto-open create modal if there are validation errors
     <c:if test="${not empty sessionScope.errors}">
