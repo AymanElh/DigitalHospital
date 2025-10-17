@@ -1,6 +1,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
+<h1>Departments content page</h1>
 <!-- Page Header with Add Button -->
 <div class="flex items-center justify-between mb-6">
     <div>
