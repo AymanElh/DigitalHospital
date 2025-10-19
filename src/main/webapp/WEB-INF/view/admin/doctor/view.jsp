@@ -3,10 +3,10 @@
 <%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
 
 <!-- Set the content for the layout -->
-<c:set var="pageTitle" value="Doctors Management" scope="request"/>
+<c:set var="pageTitle" value="Doctor Details" scope="request"/>
 <c:set var="pageContent" scope="request">
-    <!-- Include the doctors content -->
-    <jsp:include page="/WEB-INF/view/admin/doctor/doctors-content.jsp"/>
+    <!-- Include the doctor view content -->
+    <jsp:include page="/WEB-INF/view/admin/doctor/doctor-view-content.jsp"/>
 </c:set>
 
 <!-- Include the admin layout -->

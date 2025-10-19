@@ -30,7 +30,7 @@ public class DoctorServiceImp implements IDoctorService {
         try {
             tx.begin();
             Doctor doc = doctorRepository.findDoctorByEmail(doctor.getEmail(), em).orElse(null);
-            if (doc == null) {
+            if (doc != null) {
                 throw new IllegalArgumentException("Email is already exists");
             }
 
@@ -103,11 +103,13 @@ public class DoctorServiceImp implements IDoctorService {
 
             Doctor doctor = doctorRepository.findById(id, em)
                     .orElseThrow(() -> new IllegalArgumentException("Doctor not found"));
+            System.out.println("Deleted doctor: " + doctor);
 
-             if (doctorRepository.hasActiveConsultations(id, em)) {
-                 throw new IllegalStateException("Cannot delete doctor with active consultations");
-             }
+            if (doctorRepository.hasActiveConsultations(id, em)) {
+                throw new IllegalStateException("Cannot delete doctor with active consultations");
+            }
 
+            doctor.softDelete();
             doctorRepository.delete(doctor, em);
 
             tx.commit();

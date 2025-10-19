@@ -27,8 +27,6 @@ public class DoctorRepositoryImp extends GenericRepositoryImp<Doctor> implements
             return Optional.ofNullable(doctor);
         } catch (Exception e) {
             return Optional.empty();
-        } finally {
-            if (em != null) em.close();
         }
     }
 

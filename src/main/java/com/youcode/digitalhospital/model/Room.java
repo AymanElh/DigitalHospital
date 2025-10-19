@@ -13,7 +13,7 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString
+@ToString(exclude = {"doctor"})
 public class Room {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

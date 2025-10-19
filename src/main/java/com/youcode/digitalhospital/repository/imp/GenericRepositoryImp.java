@@ -1,5 +1,6 @@
 package com.youcode.digitalhospital.repository.imp;
 
+import com.youcode.digitalhospital.model.SoftDeletable;
 import com.youcode.digitalhospital.repository.interfaces.IGenericRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
@@ -24,7 +25,21 @@ public abstract class GenericRepositoryImp<T> implements IGenericRepository<T> {
     }
 
     public void delete(T entity, EntityManager em) {
-        em.remove(entity);
+        if(!(entity instanceof SoftDeletable)) {
+            throw new UnsupportedOperationException("Entity " + entity.getClass().getSimpleName() + "doesn't support soft delete");
+        }
+
+        try {
+            if(!em.contains(entity)) {
+                entity = em.merge(entity);
+            }
+
+            ((SoftDeletable) entity).softDelete();
+            em.merge(entity);
+            em.flush();
+        } catch (Exception e) {
+            throw new RuntimeException("Error during soft delete: " + e.getMessage(), e);
+        }
     }
 
     public Optional<T> findById(Long id, EntityManager em) {

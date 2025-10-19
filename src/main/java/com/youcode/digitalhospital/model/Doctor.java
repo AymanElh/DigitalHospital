@@ -14,13 +14,12 @@ import java.util.List;
 @SQLDelete(sql = "UPDATE users SET is_deleted = true, deleted_at = NOW() WHERE id = ?")
 @Getter
 @Setter
-@NoArgsConstructor
-@ToString(callSuper = true)
+@ToString(callSuper = true, exclude = {"room"})
 public class Doctor extends User {
     @Column(name = "specialty", nullable = false, length = 150)
     private String speciality;
 
-    @OneToMany(mappedBy = "doctor")
+    @OneToMany(mappedBy = "doctor", fetch = FetchType.EAGER)
     private List<Consultation> consultationList = new ArrayList<>();
 
     @ManyToOne
@@ -28,7 +27,11 @@ public class Doctor extends User {
     @Fetch(FetchMode.JOIN)
     private Department department;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "room_id", referencedColumnName = "id")
     private Room room;
+
+    public Doctor() {
+        this.role = RoleEnum.DOCTOR;
+    }
 }
