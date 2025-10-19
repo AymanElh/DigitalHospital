@@ -102,6 +102,7 @@ public class DepartmentServiceImp implements IDepartmentService {
             if(tx.isActive()) {
                 tx.rollback();
             }
+            throw new RuntimeException("Error deleting department: " + e.getMessage());
         } finally {
             em.close();
         }

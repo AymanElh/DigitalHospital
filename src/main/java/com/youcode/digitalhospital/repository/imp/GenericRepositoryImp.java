@@ -25,20 +25,28 @@ public abstract class GenericRepositoryImp<T> implements IGenericRepository<T> {
     }
 
     public void delete(T entity, EntityManager em) {
-        if(!(entity instanceof SoftDeletable)) {
-            throw new UnsupportedOperationException("Entity " + entity.getClass().getSimpleName() + "doesn't support soft delete");
-        }
-
         try {
-            if(!em.contains(entity)) {
+            // Get managed entity
+            if (!em.contains(entity)) {
                 entity = em.merge(entity);
             }
 
-            ((SoftDeletable) entity).softDelete();
-            em.merge(entity);
-            em.flush();
+            // ✅ Check if entity supports soft delete
+            if (entity instanceof SoftDeletable) {
+                // SOFT DELETE: Set isDeleted = true
+                ((SoftDeletable) entity).softDelete();
+                em.merge(entity);
+                em.flush();
+            } else {
+                // HARD DELETE: Remove from database
+                em.remove(entity);
+                em.flush();
+            }
+
         } catch (Exception e) {
-            throw new RuntimeException("Error during soft delete: " + e.getMessage(), e);
+            throw new RuntimeException(
+                    "Error deleting " + this.entity.getSimpleName() +
+                            ": " + e.getMessage(), e);
         }
     }
 

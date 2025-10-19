@@ -96,14 +96,14 @@
                     <p class="text-sm font-medium text-white truncate">
                         <c:choose>
                             <c:when test="${not empty sessionScope.user}">
-                                ${sessionScope.user.firstName} ${sessionScope.user.lastName}
+                                ${sessionScope.user.firstName} ${sessionScope.userName}
                             </c:when>
                             <c:otherwise>Admin User</c:otherwise>
                         </c:choose>
                     </p>
                     <p class="text-xs text-gray-400 truncate">
                         <c:choose>
-                            <c:when test="${not empty sessionScope.user}">
+                            <c:when test="${not empty sessionScope.userEmail}">
                                 ${sessionScope.user.email}
                             </c:when>
                             <c:otherwise>admin@clinic.com</c:otherwise>

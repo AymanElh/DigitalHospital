@@ -3,6 +3,7 @@ package com.youcode.digitalhospital.service.impl.buisiness;
 import com.youcode.digitalhospital.config.JPAConfig;
 import com.youcode.digitalhospital.model.*;
 import com.youcode.digitalhospital.repository.interfaces.IConsultationRepository;
+import com.youcode.digitalhospital.repository.interfaces.IConsultationSlotRepository;
 import com.youcode.digitalhospital.repository.interfaces.IDoctorRepository;
 import com.youcode.digitalhospital.repository.interfaces.IPatientRepository;
 import com.youcode.digitalhospital.service.interfaces.business.IConsultationService;
@@ -25,6 +26,8 @@ public class ConsultationServiceImp implements IConsultationService {
     IDoctorRepository doctorRepo;
     @Inject
     IConsultationRepository consultationRepo;
+    @Inject
+    IConsultationSlotRepository consultationSlotRepository;
 
     @Override
     public List<Consultation> getPatientHistory(Long patientId) throws Exception {
@@ -196,7 +199,7 @@ public class ConsultationServiceImp implements IConsultationService {
     }
 
     @Override
-    public List<Consultation> getDoctorPlaning(Long doctorId, LocalDate date) {
+    public List<ConsultationSlot> getDoctorPlaning(Long doctorId, LocalDate date) {
         if(doctorId == null) {
             throw new IllegalArgumentException("Doctor Id cannot be null");
         }
@@ -206,9 +209,9 @@ public class ConsultationServiceImp implements IConsultationService {
         try {
             tx.begin();
             Doctor doctor = doctorRepo.findById(doctorId, em).orElseThrow(() -> new Exception("Doctor not found"));
-            List<Consultation> consultations = consultationRepo.findByDoctorAndDate(doctor, date, em);
+            List<ConsultationSlot> slots = consultationSlotRepository.getSlotsByDoctorAndDate(doctor, date, em);
             tx.commit();
-            return consultations;
+            return slots;
         } catch (Exception e) {
             if(tx.isActive()) tx.rollback();
             throw new RuntimeException(e);

@@ -11,7 +11,10 @@ import java.util.List;
 import java.util.Optional;
 
 @ApplicationScoped
-public class RoomRepositoryImp implements IRoomRepository {
+public class RoomRepositoryImp extends GenericRepositoryImp<Room> implements IRoomRepository {
+    public RoomRepositoryImp() {
+        super(Room.class);
+    }
 
     private static final String FIND_AVAILABLE_ROOMS_JPQL = "SELECT r FROM Room r WHERE r.isAvailable = true";
     private static final String FIND_BY_ROOM_NUMBER_JPQL = "SELECT r FROM Room r WHERE r.roomNumber = :roomNumber";

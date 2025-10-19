@@ -168,7 +168,6 @@ public class DepartmentServlet extends HttpServlet {
             // Parse ID
             Long id = Long.parseLong(idStr);
 
-            // Get department name for success message (optional)
             String departmentName = req.getParameter("name");
 
             // Delete via service
@@ -186,7 +185,7 @@ public class DepartmentServlet extends HttpServlet {
         } catch (Exception e) {
             System.err.println("Error deleting department: " + e.getMessage());
             req.getSession().setAttribute("errorMessage",
-                    "Error deleting department: " + e.getMessage());
+                    e.getMessage());
         }
 
         // Redirect back to departments list

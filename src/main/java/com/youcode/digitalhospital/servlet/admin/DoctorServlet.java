@@ -1,31 +1,31 @@
 package com.youcode.digitalhospital.servlet.admin;
 
+import com.youcode.digitalhospital.config.JPAConfig;
 import com.youcode.digitalhospital.dto.department.DepartmentDTO;
 import com.youcode.digitalhospital.dto.doctor.DoctorDTO;
 import com.youcode.digitalhospital.dto.room.RoomDTO;
 import com.youcode.digitalhospital.mapper.DepartmentMapper;
 import com.youcode.digitalhospital.mapper.DoctorMapper;
 import com.youcode.digitalhospital.mapper.RoomMapper;
-import com.youcode.digitalhospital.model.Department;
-import com.youcode.digitalhospital.model.Doctor;
-import com.youcode.digitalhospital.model.Room;
+import com.youcode.digitalhospital.model.*;
 import com.youcode.digitalhospital.service.interfaces.business.IAuthenticationService;
+import com.youcode.digitalhospital.service.interfaces.business.IConsultationService;
 import com.youcode.digitalhospital.service.interfaces.entity.IDepartmentService;
 import com.youcode.digitalhospital.service.interfaces.entity.IDoctorService;
 import com.youcode.digitalhospital.service.interfaces.entity.IRoomService;
 import com.youcode.digitalhospital.service.impl.buisiness.SlotGeneratorService;
 import com.youcode.digitalhospital.util.ValidationUtil;
 import jakarta.inject.Inject;
+import jakarta.persistence.EntityManager;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.*;
-
-import java.io.IOException;
 import java.util.stream.Collectors;
 
 @WebServlet("/admin/doctors/*")
@@ -40,6 +40,8 @@ public class DoctorServlet extends HttpServlet {
     IAuthenticationService authService;
     @Inject
     SlotGeneratorService slotGeneratorService;
+    @Inject
+    IConsultationService consultationService;
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -47,6 +49,10 @@ public class DoctorServlet extends HttpServlet {
 
         if (pathInfo != null && pathInfo.equals("/create")) {
             showCreateForm(req, resp);
+        } else if (pathInfo != null && pathInfo.matches("^/\\d+/schedule$")) {
+            String[] parts = pathInfo.split("/");
+            Long doctorId = Long.parseLong(parts[1]);
+            showDoctorSchedule(req, resp, doctorId);
         } else if (pathInfo != null && pathInfo.matches("^/\\d+$")) {
             Long doctorId = Long.parseLong(pathInfo.substring(1)); // remove leading slash
             showDoctorDetails(req, resp, doctorId);
@@ -61,19 +67,19 @@ public class DoctorServlet extends HttpServlet {
 
         if (pathInfo == null || pathInfo.equals("/create")) {
             createDoctor(req, resp);
-        } else if(pathInfo.equals("/edit-info")) {
+        } else if (pathInfo.equals("/edit-info")) {
             Long doctorId = Long.parseLong(req.getParameter("id"));
             editPersonalInfo(req, resp, doctorId);
-        } else if(pathInfo.equals("/assign-department")) {
+        } else if (pathInfo.equals("/assign-department")) {
             Long doctorId = Long.parseLong(req.getParameter("doctorId"));
             assignDepartment(req, resp, doctorId);
-        } else if(pathInfo.equals("/attach-room")) {
+        } else if (pathInfo.equals("/attach-room")) {
             Long doctorId = Long.parseLong(req.getParameter("doctorId"));
             attachRoom(req, resp, doctorId);
-        } else if(pathInfo.equals("/generate-slots")) {
+        } else if (pathInfo.equals("/generate-slots")) {
             Long doctorId = Long.parseLong(req.getParameter("doctorId"));
             generateSlots(req, resp, doctorId);
-        } else if(pathInfo.equals("/delete")) {
+        } else if (pathInfo.equals("/delete")) {
             Long doctorId = Long.parseLong(req.getParameter("id"));
             deleteDoctor(req, resp, doctorId);
         }
@@ -404,32 +410,15 @@ public class DoctorServlet extends HttpServlet {
             // Get the room ID from the request
             Long roomId = Long.parseLong(req.getParameter("roomId"));
 
-            // Find the doctor by ID
-            Optional<Doctor> doctorOptional = doctorService.findById(doctorId);
-            if (doctorOptional.isEmpty()) {
-                req.getSession().setAttribute("errorMessage", "Doctor not found with id: " + doctorId);
-                resp.sendRedirect(req.getContextPath() + "/admin/doctors");
-                return;
-            }
-
-            Doctor doctor = doctorOptional.get();
-
-            // Find the room by ID
-            Room room = roomService.getRoomById(roomId)
-                    .orElseThrow(() -> new IllegalArgumentException("Room not found"));
-
-            // Attach the room to the doctor
-            doctor.setRoom(room);
-
             // Save the updated doctor
-            doctorService.update(doctor);
+            doctorService.assignRoomToDoctor(doctorId, roomId);
 
             req.getSession().setAttribute("successMessage", "Room attached to doctor successfully");
             resp.sendRedirect(req.getContextPath() + "/admin/doctors/" + doctorId);
 
         } catch (Exception e) {
             e.printStackTrace();
-            req.getSession().setAttribute("errorMessage", "Error attaching room: " + e.getMessage());
+            req.getSession().setAttribute("errorMessage", e.getMessage());
             resp.sendRedirect(req.getContextPath() + "/admin/doctors/" + doctorId);
         }
     }
@@ -452,7 +441,7 @@ public class DoctorServlet extends HttpServlet {
 
             // Validate input
             if (startDateStr == null || startDateStr.trim().isEmpty() ||
-                endDateStr == null || endDateStr.trim().isEmpty()) {
+                    endDateStr == null || endDateStr.trim().isEmpty()) {
                 req.getSession().setAttribute("errorMessage", "Start date and end date are required");
                 resp.sendRedirect(req.getContextPath() + "/admin/doctors/" + doctorId);
                 return;
@@ -469,7 +458,7 @@ public class DoctorServlet extends HttpServlet {
                 return;
             }
 
-            if(!startDate.isAfter(LocalDate.now().plusDays(1))) {
+            if (!startDate.isAfter(LocalDate.now().plusDays(1))) {
                 req.getSession().setAttribute("errorMessage", "You can't assign slots today, you should start from tomorrow");
                 resp.sendRedirect(req.getContextPath() + "/admin/doctors/" + doctorId);
                 return;
@@ -503,8 +492,8 @@ public class DoctorServlet extends HttpServlet {
             System.out.println("Slots generated: " + slotsGenerated);
 
             req.getSession().setAttribute("successMessage",
-                "Successfully generated " + slotsGenerated + " consultation slots for Dr. " +
-                doctor.getFirstName() + " " + doctor.getLastName());
+                    "Successfully generated " + slotsGenerated + " consultation slots for Dr. " +
+                            doctor.getFirstName() + " " + doctor.getLastName());
             resp.sendRedirect(req.getContextPath() + "/admin/doctors/" + doctorId);
 
         } catch (java.time.format.DateTimeParseException e) {
@@ -545,4 +534,43 @@ public class DoctorServlet extends HttpServlet {
             resp.sendRedirect(req.getContextPath() + "/admin/doctors");
         }
     }
+
+    /**
+     * Show doctor schedule
+     */
+    private void showDoctorSchedule(HttpServletRequest req, HttpServletResponse resp, Long doctorId) throws ServletException, IOException {
+        try {
+            // Get the doctor
+            Optional<Doctor> doctorOptional = doctorService.findById(doctorId);
+            if (doctorOptional.isEmpty()) {
+                req.getSession().setAttribute("errorMessage", "Doctor not found");
+                resp.sendRedirect(req.getContextPath() + "/admin/doctors");
+                return;
+            }
+
+            Doctor doctor = doctorOptional.get();
+            DoctorDTO doctorDTO = DoctorMapper.toDTO(doctor);
+            req.setAttribute("doctor", doctorDTO);
+
+            // Get the selected date from parameter
+            String dateParam = req.getParameter("date");
+
+            if(dateParam != null) {
+                LocalDate scheduleDate = LocalDate.parse(dateParam);
+                System.out.println("Schedule date: " + scheduleDate);
+
+                List<ConsultationSlot> slots = consultationService.getDoctorPlaning(doctorId, scheduleDate);
+
+                req.setAttribute("slots", slots);
+            }
+
+            req.getRequestDispatcher("/WEB-INF/view/admin/doctor/schedule.jsp").forward(req, resp);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            req.getSession().setAttribute("errorMessage", "Error loading schedule: " + e.getMessage());
+            resp.sendRedirect(req.getContextPath() + "/admin/doctors/" + doctorId);
+        }
+    }
+
 }

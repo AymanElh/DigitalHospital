@@ -279,9 +279,19 @@
 
     <!-- Schedule Management Section -->
     <div class="bg-gray-800 rounded-lg border border-gray-700">
-        <div class="px-6 py-4 border-b border-gray-700">
-            <h2 class="text-xl font-semibold text-white">Schedule Management</h2>
-            <p class="text-sm text-gray-400 mt-1">Generate consultation time slots for the doctor's working days</p>
+        <div class="px-6 py-4 border-b border-gray-700 flex items-center justify-between">
+            <div>
+                <h2 class="text-xl font-semibold text-white">Schedule Management</h2>
+                <p class="text-sm text-gray-400 mt-1">Generate consultation time slots for the doctor's working days</p>
+            </div>
+            <!-- View Schedule Button -->
+            <a href="${pageContext.request.contextPath}/admin/doctors/${doctor.id}/schedule"
+               class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition">
+                <svg class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                </svg>
+                View Schedule
+            </a>
         </div>
 
         <div class="p-6">

@@ -41,6 +41,11 @@ public interface IDoctorService {
     List<Doctor> findAll();
 
     /**
+     * Method to assign a room to a doctor
+     */
+    void assignRoomToDoctor(Long doctorId, Long roomId);
+
+    /**
      * Get a doctor by its email
      * @param email
      * @return
