@@ -3,6 +3,7 @@ package com.youcode.digitalhospital.service.interfaces.business;
 import com.youcode.digitalhospital.model.Consultation;
 import com.youcode.digitalhospital.model.ConsultationSlot;
 import com.youcode.digitalhospital.model.ConsultationStatus;
+import com.youcode.digitalhospital.model.Doctor;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -22,6 +23,9 @@ public interface IConsultationService {
 
     // Doctor side
     List<ConsultationSlot> getDoctorPlaning(Long doctorId, LocalDate date);
+
+    ConsultationSlot getSlot(Long doctorId, LocalDate date, LocalDateTime startTime);
+
     List<Consultation> getPlanningConsultations(Long doctorId);
     Consultation refuseConsultation(Long consultationId, Long doctorId);
     Consultation updateConsultationStatus(Long consultationId, ConsultationStatus status, Long doctorId);

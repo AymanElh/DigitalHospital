@@ -32,7 +32,7 @@ public class AuthenticationServiceImp implements IAuthenticationService {
 
         EntityManager em = JPAConfig.getEntityManager();
         User user = patientRepo.findByEmail(email, em).orElseThrow(() -> new IllegalArgumentException("Invalid email or password"));
-
+        System.out.println(user);
         if(!verifyPassword(password, user.getPassword())) {
             throw new IllegalArgumentException("Invalid email or password");
         }

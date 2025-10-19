@@ -300,6 +300,17 @@ public class ConsultationServiceImp implements IConsultationService {
     }
 
     @Override
+    public ConsultationSlot getSlot(Long doctorId, LocalDate date, LocalDateTime startTime) {
+        if(doctorId == null) {
+            throw new IllegalArgumentException("Doctor id cannot be null");
+        }
+
+        if(date.isBefore(LocalDate.now())) {
+            throw new IllegalArgumentException("Invalid date");
+        }
+    }
+
+    @Override
     public String createCompteRendu(Long doctorId, Long patientId, Long consultationId) {
         return "";
     }

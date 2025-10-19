@@ -25,7 +25,7 @@ public class PatientRepositoryImp extends GenericRepositoryImp<Patient> implemen
             Patient patient = em.createQuery(jpql, Patient.class)
                     .setParameter("email", email)
                     .getSingleResult();
-            return Optional.ofNullable(patient);
+            return Optional.of(patient);
         } catch (jakarta.persistence.NoResultException e) {
             return Optional.empty();
         }
