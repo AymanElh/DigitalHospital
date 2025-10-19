@@ -5,7 +5,6 @@ import com.youcode.digitalhospital.mapper.DoctorMapper;
 import com.youcode.digitalhospital.model.Consultation;
 import com.youcode.digitalhospital.model.ConsultationSlot;
 import com.youcode.digitalhospital.model.Doctor;
-import com.youcode.digitalhospital.model.Patient;
 import com.youcode.digitalhospital.service.interfaces.business.IConsultationService;
 import com.youcode.digitalhospital.service.interfaces.entity.IDoctorService;
 import com.youcode.digitalhospital.service.interfaces.entity.IPatientService;
@@ -19,6 +18,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Optional;
 
 @WebServlet("/doctors/*")
@@ -126,17 +126,18 @@ public class DoctorDetailsServlet extends HttpServlet {
 
             Long patientId = Long.parseLong(patientIdStr);
             LocalDate consultationDate = LocalDate.parse(appointmentDate);
-            LocalDateTime time = LocalDateTime.parse(startTime);
+            LocalDateTime time = LocalDateTime.of(consultationDate, LocalTime.parse(startTime));
 
-            Patient patient = patientService.getPatientById(patientId).orElseThrow(() -> new IllegalArgumentException("Patient not found"));
-
-            // TODO: Add your booking logic here
+            // Get the consultation slot
             ConsultationSlot slot = consultationService.getSlot(doctorId, consultationDate, time);
-//            Consultation consultation = consultationService.bookConsultation()
+            System.out.println("Getted slot: " + slot);
+
+            // Book the consultation (this method handles patient fetching internally)
+            Consultation consultation = consultationService.bookConsultation(patientId, slot.getId(), reason);
 
             // For now, just set success message
             req.getSession().setAttribute("successMessage",
-                "Appointment request submitted successfully! The doctor will review and confirm your booking.");
+                "Consultation request submitted successfully! The doctor will review and confirm your booking.");
 
             // Redirect back to the doctor details page
             resp.sendRedirect(req.getContextPath() + "/doctors/" + doctorId);
@@ -144,6 +145,9 @@ public class DoctorDetailsServlet extends HttpServlet {
         } catch (NumberFormatException e) {
             req.getSession().setAttribute("errorMessage", "Invalid doctor ID format");
             resp.sendRedirect(req.getContextPath() + "/doctors");
+        } catch (Exception e) {
+            req.getSession().setAttribute("errorMessage", e.getMessage());
+            resp.sendRedirect(req.getContextPath() + "/doctors/" + doctorIdParam);
         }
     }
 }

@@ -11,6 +11,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityTransaction;
+import jakarta.persistence.NoResultException;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -63,6 +64,21 @@ public class ConsultationServiceImp implements IConsultationService {
                 throw new Exception("Slot not found with that id");
             }
 
+            // check if the patient has a consultation on the same date
+            LocalDate consultationDate = slot.getStartTime().toLocalDate();
+            List<Consultation> existingConsultations = em.createQuery(
+                    "SELECT c FROM Consultation c WHERE c.patient.id = :patientId " +
+                    "AND c.consultationDate = :date ",
+                    Consultation.class)
+                    .setParameter("patientId", patientId)
+                    .setParameter("date", consultationDate)
+                    .getResultList();
+
+            if (!existingConsultations.isEmpty()) {
+                throw new Exception("Patient already has a consultation booked on " + consultationDate +
+                    ". Only one consultation per day is allowed.");
+            }
+
             if(!slot.isFree()) {
                 throw new Exception("This slot has already a consultation occupied");
             }
@@ -101,6 +117,7 @@ public class ConsultationServiceImp implements IConsultationService {
         consultation.setConsultationDate(slot.getStartTime().toLocalDate());
         consultation.setConsultationStatus(ConsultationStatus.RESERVED);
         consultation.setReason(reason);
+        consultation.setConsultationSlot(slot);
         return consultation;
     }
 
@@ -305,8 +322,39 @@ public class ConsultationServiceImp implements IConsultationService {
             throw new IllegalArgumentException("Doctor id cannot be null");
         }
 
+        if(date == null) {
+            throw new IllegalArgumentException("Date cannot be null");
+        }
+
+        if(startTime == null) {
+            throw new IllegalArgumentException("Start time cannot be null");
+        }
+
         if(date.isBefore(LocalDate.now())) {
             throw new IllegalArgumentException("Invalid date");
+        }
+
+        EntityManager em = JPAConfig.getEntityManager();
+        try {
+            Doctor doctor = doctorRepo.findById(doctorId, em)
+                    .orElseThrow(() -> new IllegalArgumentException("Doctor not found"));
+
+            ConsultationSlot slot = em.createQuery(
+                    "SELECT s FROM ConsultationSlot s WHERE s.doctor.id = :doctorId " +
+                    "AND DATE(s.startTime) = :date AND s.startTime = :startTime",
+                    ConsultationSlot.class)
+                    .setParameter("doctorId", doctorId)
+                    .setParameter("date", date)
+                    .setParameter("startTime", startTime)
+                    .getSingleResult();
+
+            return slot;
+        } catch (NoResultException e) {
+            throw new RuntimeException("No consultation slot found for the specified time");
+        } catch (Exception e) {
+            throw new RuntimeException("Error retrieving consultation slot: " + e.getMessage(), e);
+        } finally {
+            em.close();
         }
     }
 
