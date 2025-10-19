@@ -14,7 +14,7 @@ import java.util.List;
  * Repository interface for Consultation entity
  * Handles consultation-specific data access operations
  */
-public interface IConsultationRepository {
+public interface IConsultationRepository extends IGenericRepository<Consultation> {
 
     /**
      * Find all consultations for a specific patient
@@ -124,11 +124,13 @@ public interface IConsultationRepository {
     List<Consultation> findByDate(LocalDate date, EntityManager em);
 
     /**
-     * Check if patient has existing consultation at specific time (avoid double booking)
+     * Check if patient has existing consultation at specific date (avoid double booking)
      * @param patientId Patient ID
-     * @param dateTime Consultation date and time
+     * @param date Consultation date and time
      * @param em EntityManager
-     * @return True if patient has consultation at that time
+     * @return True if patient has consultation at that date
      */
-    boolean hasConsultationAtTime(Long patientId, LocalDateTime dateTime, EntityManager em);
+    boolean hasAlreadyConsultationAtDate(Long patientId, LocalDate date, EntityManager em);
+
+    boolean hasConflictConsultationAtSameDateAndTime(LocalDate date, LocalDateTime startTime, EntityManager em);
 }

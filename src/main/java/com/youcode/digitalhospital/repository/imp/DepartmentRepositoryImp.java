@@ -2,11 +2,13 @@ package com.youcode.digitalhospital.repository.imp;
 
 import com.youcode.digitalhospital.model.Department;
 import com.youcode.digitalhospital.repository.interfaces.IDepartmentRepository;
+import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.persistence.EntityManager;
 
 import java.util.List;
 import java.util.Optional;
 
+@ApplicationScoped
 public class DepartmentRepositoryImp extends GenericRepositoryImp<Department> implements IDepartmentRepository {
     public DepartmentRepositoryImp() {
         super(Department.class);

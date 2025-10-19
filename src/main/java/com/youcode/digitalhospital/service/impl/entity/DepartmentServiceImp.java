@@ -4,6 +4,7 @@ import com.youcode.digitalhospital.config.JPAConfig;
 import com.youcode.digitalhospital.model.Department;
 import com.youcode.digitalhospital.repository.interfaces.IDepartmentRepository;
 import com.youcode.digitalhospital.service.interfaces.entity.IDepartmentService;
+import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityTransaction;
@@ -11,6 +12,7 @@ import jakarta.persistence.EntityTransaction;
 import java.util.List;
 import java.util.Optional;
 
+@ApplicationScoped
 public class DepartmentServiceImp implements IDepartmentService {
 
     @Inject
@@ -100,6 +102,7 @@ public class DepartmentServiceImp implements IDepartmentService {
             if(tx.isActive()) {
                 tx.rollback();
             }
+            throw new RuntimeException("Error deleting department: " + e.getMessage());
         } finally {
             em.close();
         }

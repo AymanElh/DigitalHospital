@@ -1,6 +1,7 @@
 package com.youcode.digitalhospital.repository.interfaces;
 
 import com.youcode.digitalhospital.model.Room;
+import com.youcode.digitalhospital.repository.imp.GenericRepositoryImp;
 import jakarta.persistence.EntityManager;
 
 import java.time.LocalDateTime;
@@ -11,7 +12,7 @@ import java.util.Optional;
  * Repository interface for Room entity
  * Handles room-specific data access operations and slot management
  */
-public interface IRoomRepository {
+public interface IRoomRepository extends IGenericRepository<Room> {
 
     /**
      * Find a room by room number

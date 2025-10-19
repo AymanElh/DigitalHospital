@@ -2,13 +2,19 @@ package com.youcode.digitalhospital.repository.imp;
 
 import com.youcode.digitalhospital.model.Room;
 import com.youcode.digitalhospital.repository.interfaces.IRoomRepository;
+import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.NoResultException;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-public class RoomRepositoryImp implements IRoomRepository {
+@ApplicationScoped
+public class RoomRepositoryImp extends GenericRepositoryImp<Room> implements IRoomRepository {
+    public RoomRepositoryImp() {
+        super(Room.class);
+    }
 
     private static final String FIND_AVAILABLE_ROOMS_JPQL = "SELECT r FROM Room r WHERE r.isAvailable = true";
     private static final String FIND_BY_ROOM_NUMBER_JPQL = "SELECT r FROM Room r WHERE r.roomNumber = :roomNumber";
@@ -22,10 +28,17 @@ public class RoomRepositoryImp implements IRoomRepository {
 
     @Override
     public Optional<Room> findByRoomNumber(Long roomNumber, EntityManager em) {
-        Room room =  em.createQuery(FIND_BY_ROOM_NUMBER_JPQL, Room.class)
-                .setParameter("roomNumber", roomNumber)
-                .getSingleResult();
-        return Optional.ofNullable(room);
+        System.out.println("Calling repository");
+        try {
+            Room room = em.createQuery(FIND_BY_ROOM_NUMBER_JPQL, Room.class)
+                    .setParameter("roomNumber", roomNumber)
+                    .getSingleResult();
+            System.out.println("Search room by number:" + room);
+            return Optional.of(room);
+        } catch (NoResultException e) {
+            System.out.println("No room found for with room number: " + roomNumber);
+            return Optional.empty();
+        }
     }
 
     @Override

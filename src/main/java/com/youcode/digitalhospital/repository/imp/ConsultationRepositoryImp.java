@@ -11,7 +11,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
-public class ConsultationRepositoryImp extends GenericRepositoryImp implements IConsultationRepository {
+public class ConsultationRepositoryImp extends GenericRepositoryImp<Consultation> implements IConsultationRepository {
 
     public ConsultationRepositoryImp() {
         super(Consultation.class);
@@ -67,7 +67,7 @@ public class ConsultationRepositoryImp extends GenericRepositoryImp implements I
     public List<Consultation> findByDateRange(LocalDate startDate, LocalDate endDate, EntityManager em) {
         String jpql = "SELECT c FROM Consultation c WHERE c.consultationDate BETWEEN :startDate AND :endDate ORDER BY c.consultationDate DESC";
         return em.createQuery(jpql, Consultation.class)
-                .setParameter("startDate",startDate)
+                .setParameter("startDate", startDate)
                 .setParameter("endDate", endDate)
                 .getResultList();
     }
@@ -82,7 +82,7 @@ public class ConsultationRepositoryImp extends GenericRepositoryImp implements I
 
     @Override
     public List<Consultation> findDoctorPlanning(Long doctorId, EntityManager em) {
-        String jpql = "SELECT c FROM Consultation c JOIN c.doctor d WHERE d.id = :doctorId AND c.consultationStatus = :status ORDER BY c.consultationDate ASC, c.slot.startTime ASC";
+        String jpql = "SELECT c FROM Consultation c JOIN c.doctor d WHERE d.id = :doctorId AND c.consultationStatus = :status ORDER BY c.consultationDate ASC, c.consultationSlot.startTime ASC";
         return em.createQuery(jpql, Consultation.class)
                 .setParameter("doctorId", doctorId)
                 .setParameter("status", ConsultationStatus.RESERVED)
@@ -91,7 +91,7 @@ public class ConsultationRepositoryImp extends GenericRepositoryImp implements I
 
     @Override
     public List<Consultation> findPendingConsultations(Long doctorId, EntityManager em) {
-        String jpql = "SELECT c FROM Consultation c JOIN c.doctor d WHERE d.id = :doctorId AND c.consultationStatus = :status ORDER BY c.consultationDate ASC, c.slot.startTime ASC";
+        String jpql = "SELECT c FROM Consultation c JOIN c.doctor d WHERE d.id = :doctorId AND c.consultationStatus = :status ORDER BY c.consultationDate ASC, c.consultationSlot.startTime ASC";
         return em.createQuery(jpql, Consultation.class)
                 .setParameter("doctorId", doctorId)
                 .setParameter("status", ConsultationStatus.RESERVED)
@@ -100,7 +100,7 @@ public class ConsultationRepositoryImp extends GenericRepositoryImp implements I
 
     @Override
     public List<Consultation> findByDateAndTimeSlot(LocalDate date, LocalDateTime startTime, LocalDateTime endTime, EntityManager em) {
-        String jpql = "SELECT c FROM Consultation c WHERE c.consultationDate = :date AND c.slot.startTime < :endTime AND c.slot.endTime > :startTime";
+        String jpql = "SELECT c FROM Consultation c WHERE c.consultationDate = :date AND c.consultationSlot.startTime < :endTime AND c.consultationSlot.endTime > :startTime";
         return em.createQuery(jpql, Consultation.class)
                 .setParameter("date", date)
                 .setParameter("startTime", startTime)
@@ -118,20 +118,33 @@ public class ConsultationRepositoryImp extends GenericRepositoryImp implements I
 
     @Override
     public List<Consultation> findByDate(LocalDate date, EntityManager em) {
-        String jpql = "SELECT c FROM Consultation c WHERE c.consultationDate = :date ORDER BY c.slot.startTime ASC";
+        String jpql = "SELECT c FROM Consultation c WHERE c.consultationDate = :date ORDER BY c.consultationSlot.startTime ASC";
         return em.createQuery(jpql, Consultation.class)
                 .setParameter("date", date)
                 .getResultList();
     }
 
     @Override
-    public boolean hasConsultationAtTime(Long patientId, LocalDateTime dateTime, EntityManager em) {
-        String jpql = "SELECT COUNT(c) FROM Consultation c JOIN c.patient p WHERE p.id = :patientId AND c.consultationDate = :date AND c.slot.startTime <= :dateTime AND c.slot.endTime > :dateTime";
+    public boolean hasAlreadyConsultationAtDate(Long patientId, LocalDate date, EntityManager em) {
+        String jpql = "SELECT COUNT(c) FROM Consultation c JOIN c.patient p WHERE p.id = :patientId AND c.consultationDate = :date";
         Long count = em.createQuery(jpql, Long.class)
                 .setParameter("patientId", patientId)
-                .setParameter("date", dateTime.toLocalDate())
-                .setParameter("dateTime", dateTime)
+                .setParameter("date", date)
                 .getSingleResult();
         return count > 0;
+    }
+
+    @Override
+    public boolean hasConflictConsultationAtSameDateAndTime(LocalDate date, LocalDateTime startTime, EntityManager em) {
+        String jpql = "SELECT COUNT(c) FROM Consultation c " +
+                "WHERE c.consultationDate = :date " +
+                "AND c.consultationSlot.startTime = :startTime " +
+                "AND c.consultationStatus != :cancelledStatus";
+
+        return em.createQuery(jpql, Long.class)
+                .setParameter("date", date)
+                .setParameter("startTime", startTime)
+                .setParameter("cancelledStatus", ConsultationStatus.CANCELED)
+                .getSingleResult() > 0;
     }
 }

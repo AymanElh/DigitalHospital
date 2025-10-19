@@ -4,9 +4,12 @@ import com.youcode.digitalhospital.config.JPAConfig;
 import com.youcode.digitalhospital.model.Department;
 import com.youcode.digitalhospital.model.Doctor;
 import com.youcode.digitalhospital.model.RoleEnum;
+import com.youcode.digitalhospital.model.Room;
 import com.youcode.digitalhospital.repository.interfaces.IDepartmentRepository;
 import com.youcode.digitalhospital.repository.interfaces.IDoctorRepository;
+import com.youcode.digitalhospital.repository.interfaces.IRoomRepository;
 import com.youcode.digitalhospital.service.interfaces.entity.IDoctorService;
+import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityTransaction;
@@ -14,12 +17,15 @@ import jakarta.persistence.EntityTransaction;
 import java.util.List;
 import java.util.Optional;
 
+@ApplicationScoped
 public class DoctorServiceImp implements IDoctorService {
 
     @Inject
     IDoctorRepository doctorRepository;
     @Inject
     IDepartmentRepository departmentRepository;
+    @Inject
+    IRoomRepository roomRepository;
 
     @Override
     public Doctor create(Doctor doctor) {
@@ -28,7 +34,7 @@ public class DoctorServiceImp implements IDoctorService {
         try {
             tx.begin();
             Doctor doc = doctorRepository.findDoctorByEmail(doctor.getEmail(), em).orElse(null);
-            if (doc == null) {
+            if (doc != null) {
                 throw new IllegalArgumentException("Email is already exists");
             }
 
@@ -101,11 +107,13 @@ public class DoctorServiceImp implements IDoctorService {
 
             Doctor doctor = doctorRepository.findById(id, em)
                     .orElseThrow(() -> new IllegalArgumentException("Doctor not found"));
+            System.out.println("Deleted doctor: " + doctor);
 
-             if (doctorRepository.hasActiveConsultations(id, em)) {
-                 throw new IllegalStateException("Cannot delete doctor with active consultations");
-             }
+            if (doctorRepository.hasActiveConsultations(id, em)) {
+                throw new IllegalStateException("Cannot delete doctor with active consultations");
+            }
 
+            doctor.softDelete();
             doctorRepository.delete(doctor, em);
 
             tx.commit();
@@ -181,6 +189,61 @@ public class DoctorServiceImp implements IDoctorService {
         EntityManager em = JPAConfig.getEntityManager();
         try {
             return doctorRepository.findBySpeciality(speciality, em);
+        } finally {
+            em.close();
+        }
+    }
+
+    @Override
+    public void assignRoomToDoctor(Long doctorId, Long roomId) {
+        if(doctorId == null) {
+            throw new IllegalArgumentException("Doctor id cannot be null");
+        }
+
+        if(roomId == null) {
+            throw new IllegalArgumentException("Room id cannot be null");
+        }
+
+        EntityManager em = JPAConfig.getEntityManager();
+        EntityTransaction tx = em.getTransaction();
+        try {
+            tx.begin();
+
+            // Find the new room and doctor
+            Room newRoom = roomRepository.findById(roomId, em)
+                    .orElseThrow(() -> new IllegalArgumentException("Room not found"));
+            Doctor doctor = doctorRepository.findById(doctorId, em)
+                    .orElseThrow(() -> new IllegalArgumentException("Doctor not found"));
+
+            // Check if the doctor already has a room assigned
+            Room oldRoom = doctor.getRoom();
+
+            if (oldRoom != null) {
+                // If reassigning to the same room, do nothing
+                if (oldRoom.getId().equals(roomId)) {
+                    tx.commit();
+                    return;
+                }
+
+                // Free the old room (make it available again)
+                oldRoom.setAvailable(true);
+                roomRepository.update(oldRoom, em);
+            }
+
+            // Assign the new room to the doctor
+            doctor.setRoom(newRoom);
+            newRoom.setAvailable(false);
+
+            // Update both entities
+            doctorRepository.update(doctor, em);
+            roomRepository.update(newRoom, em);
+
+            tx.commit();
+        } catch (Exception e) {
+            if (tx.isActive()) {
+                tx.rollback();
+            }
+            throw new RuntimeException("Error while assigning the room to doctor: " + e.getMessage(), e);
         } finally {
             em.close();
         }

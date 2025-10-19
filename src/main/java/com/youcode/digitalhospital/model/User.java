@@ -16,8 +16,8 @@ import java.time.LocalDateTime;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString
-public abstract class User {
+@ToString(exclude = {"doctor"})
+public abstract class User implements SoftDeletable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     protected Long id;
@@ -37,12 +37,15 @@ public abstract class User {
     @Transient
     protected String confirmPassword;
 
+    @Column(name = "phone_number")
+    protected String phoneNumber;
+
     @Column(nullable = false, length = 25)
     @Enumerated(EnumType.STRING)
-    private RoleEnum role;
+    protected RoleEnum role;
 
     @Column(name = "is_deleted", nullable = false)
-    private Boolean isDeleted;
+    private Boolean isDeleted = false;
 
     @Column(name = "deleted_at")
     private LocalDateTime deletedAt;
@@ -78,20 +81,24 @@ public abstract class User {
         updatedAt = LocalDateTime.now();
     }
 
+    @Override
     public void softDelete() {
         this.isDeleted = true;
         this.deletedAt = LocalDateTime.now();
     }
 
+    @Override
     public void restore() {
         this.isDeleted = false;
         this.deletedAt = null;
     }
 
+    @Override
     public boolean isDeleted() {
         return isDeleted != null && isDeleted == true;
     }
 
+    @Override
     public boolean isActive() {
         return !isDeleted();
     }
