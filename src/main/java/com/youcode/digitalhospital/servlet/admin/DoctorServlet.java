@@ -22,6 +22,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
+import java.time.LocalDate;
 import java.util.*;
 
 import java.io.IOException;
@@ -211,6 +212,9 @@ public class DoctorServlet extends HttpServlet {
         }
     }
 
+    /**
+     * Shot doctor personal info
+     */
     private void showDoctorDetails(HttpServletRequest req, HttpServletResponse resp, Long doctorId) throws ServletException, IOException {
         if (doctorId == null) {
             req.getSession().setAttribute("errorMessage", "Doctor id is invalid");
@@ -251,6 +255,9 @@ public class DoctorServlet extends HttpServlet {
         }
     }
 
+    /**
+     * Edit doctor personal info like name, email ...
+     */
     private void editPersonalInfo(HttpServletRequest req, HttpServletResponse resp, Long doctorId) throws ServletException, IOException {
         if (doctorId == null) {
             req.getSession().setAttribute("errorMessage", "Invalid doctor id");
@@ -339,6 +346,9 @@ public class DoctorServlet extends HttpServlet {
         }
     }
 
+    /**
+     * Assign a department to a doctor
+     */
     private void assignDepartment(HttpServletRequest req, HttpServletResponse resp, Long doctorId) throws ServletException, IOException {
         if (doctorId == null) {
             req.getSession().setAttribute("errorMessage", "Invalid doctor id");
@@ -380,6 +390,9 @@ public class DoctorServlet extends HttpServlet {
         }
     }
 
+    /**
+     * Give room to a dcctor or modify it
+     */
     private void attachRoom(HttpServletRequest req, HttpServletResponse resp, Long doctorId) throws ServletException, IOException {
         if (doctorId == null) {
             req.getSession().setAttribute("errorMessage", "Invalid doctor id");
@@ -421,6 +434,10 @@ public class DoctorServlet extends HttpServlet {
         }
     }
 
+
+    /**
+     * Generate slots for doctor work days
+     */
     private void generateSlots(HttpServletRequest req, HttpServletResponse resp, Long doctorId) throws ServletException, IOException {
         if (doctorId == null) {
             req.getSession().setAttribute("errorMessage", "Invalid doctor id");
@@ -442,12 +459,18 @@ public class DoctorServlet extends HttpServlet {
             }
 
             // Parse dates
-            java.time.LocalDate startDate = java.time.LocalDate.parse(startDateStr);
-            java.time.LocalDate endDate = java.time.LocalDate.parse(endDateStr);
+            LocalDate startDate = LocalDate.parse(startDateStr);
+            LocalDate endDate = LocalDate.parse(endDateStr);
 
             // Validate date range
             if (endDate.isBefore(startDate)) {
                 req.getSession().setAttribute("errorMessage", "End date must be after start date");
+                resp.sendRedirect(req.getContextPath() + "/admin/doctors/" + doctorId);
+                return;
+            }
+
+            if(!startDate.isAfter(LocalDate.now().plusDays(1))) {
+                req.getSession().setAttribute("errorMessage", "You can't assign slots today, you should start from tomorrow");
                 resp.sendRedirect(req.getContextPath() + "/admin/doctors/" + doctorId);
                 return;
             }
@@ -462,7 +485,7 @@ public class DoctorServlet extends HttpServlet {
 
             Doctor doctor = doctorOptional.get();
 
-            // Verify doctor has required assignments
+
             if (doctor.getRoom() == null) {
                 req.getSession().setAttribute("errorMessage", "Doctor must have a room attached before generating slots");
                 resp.sendRedirect(req.getContextPath() + "/admin/doctors/" + doctorId);
@@ -477,6 +500,7 @@ public class DoctorServlet extends HttpServlet {
 
             // Generate slots using the slot generator service
             int slotsGenerated = slotGeneratorService.generateSlotsForDoctor(doctorId, startDate, endDate);
+            System.out.println("Slots generated: " + slotsGenerated);
 
             req.getSession().setAttribute("successMessage",
                 "Successfully generated " + slotsGenerated + " consultation slots for Dr. " +
