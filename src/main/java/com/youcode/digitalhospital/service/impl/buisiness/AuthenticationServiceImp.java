@@ -3,9 +3,11 @@ package com.youcode.digitalhospital.service.impl.buisiness;
 import com.youcode.digitalhospital.config.JPAConfig;
 import com.youcode.digitalhospital.dto.auth.LoginDTO;
 import com.youcode.digitalhospital.dto.auth.RegisterPatientDTO;
+import com.youcode.digitalhospital.model.Doctor;
 import com.youcode.digitalhospital.model.Patient;
 import com.youcode.digitalhospital.model.RoleEnum;
 import com.youcode.digitalhospital.model.User;
+import com.youcode.digitalhospital.repository.interfaces.IDoctorRepository;
 import com.youcode.digitalhospital.repository.interfaces.IPatientRepository;
 import com.youcode.digitalhospital.service.interfaces.business.IAuthenticationService;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -19,6 +21,9 @@ public class AuthenticationServiceImp implements IAuthenticationService {
     @Inject
     IPatientRepository patientRepo;
 
+    @Inject
+    IDoctorRepository doctorRepo;
+
     @Override
     public User login(LoginDTO dto) {
         String email = dto.getEmail();
@@ -31,13 +36,27 @@ public class AuthenticationServiceImp implements IAuthenticationService {
         }
 
         EntityManager em = JPAConfig.getEntityManager();
-        User user = patientRepo.findByEmail(email, em).orElseThrow(() -> new IllegalArgumentException("Invalid email or password"));
-        System.out.println(user);
-        if(!verifyPassword(password, user.getPassword())) {
-            throw new IllegalArgumentException("Invalid email or password");
-        }
+        try {
+            User user = patientRepo.findByEmail(email, em).orElse(null);
 
-        return user;
+            if (user == null) {
+                user = doctorRepo.findDoctorByEmail(email, em).orElse(null);
+            }
+
+            if (user == null) {
+                throw new IllegalArgumentException("Invalid email or password");
+            }
+
+            System.out.println("Found user: " + user);
+
+            if(!verifyPassword(password, user.getPassword())) {
+                throw new IllegalArgumentException("Invalid email or password");
+            }
+
+            return user;
+        } finally {
+            em.close();
+        }
     }
 
     private boolean verifyPassword(String plainPassword, String hashedPassword) {
@@ -90,9 +109,21 @@ public class AuthenticationServiceImp implements IAuthenticationService {
     private User findUserByEmail(String email) {
         EntityManager em = JPAConfig.getEntityManager();
         try {
-            Patient p = patientRepo.findByEmail(email, em).orElse(null);
-            System.out.println("Getting patient by email: " + p);
-            return p;
+            // First try to find as patient
+            Patient patient = patientRepo.findByEmail(email, em).orElse(null);
+            if (patient != null) {
+                System.out.println("Getting patient by email: " + patient);
+                return patient;
+            }
+
+            // If not found as patient, try to find as doctor
+            Doctor doctor = doctorRepo.findDoctorByEmail(email, em).orElse(null);
+            if (doctor != null) {
+                System.out.println("Getting doctor by email: " + doctor);
+                return doctor;
+            }
+
+            return null;
         } catch (Exception e) {
             throw e;
         } finally {

@@ -100,7 +100,7 @@
                                                 <span class="bg-green-600 text-white text-xs px-2 py-1 rounded">Available</span>
                                             </c:when>
                                             <c:otherwise>
-                                                <span class="bg-red-600 text-white text-xs px-2 py-1 rounded">Booked</span>
+                                                <span class="bg-red-600 text-white text-xs px-2 py-1 rounded">${slot.consultation.consultationStatus}</span>
                                             </c:otherwise>
                                         </c:choose>
                                     </div>
