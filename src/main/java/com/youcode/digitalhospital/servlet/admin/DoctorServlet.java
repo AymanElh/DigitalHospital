@@ -82,6 +82,8 @@ public class DoctorServlet extends HttpServlet {
         } else if (pathInfo.equals("/delete")) {
             Long doctorId = Long.parseLong(req.getParameter("id"));
             deleteDoctor(req, resp, doctorId);
+        } else if (pathInfo.equals("/consultations")) {
+
         }
     }
 
@@ -219,7 +221,7 @@ public class DoctorServlet extends HttpServlet {
     }
 
     /**
-     * Shot doctor personal info
+     * Show doctor personal info
      */
     private void showDoctorDetails(HttpServletRequest req, HttpServletResponse resp, Long doctorId) throws ServletException, IOException {
         if (doctorId == null) {
@@ -239,6 +241,7 @@ public class DoctorServlet extends HttpServlet {
             }
 
             Doctor doctor = doctorOptional.get();
+
             DoctorDTO dto = DoctorMapper.toDTO(doctor);
 
             List<DepartmentDTO> departments = departmentService.findAll().stream()

@@ -113,10 +113,10 @@
                                             <!-- Time -->
                                             <div class="text-center min-w-0 flex-shrink-0">
                                                 <div class="text-sm font-medium text-white">
-                                                    <c:out value="${slot.startTime}"/>
+<%--                                                    ${slot.startTime.hour}:${slot.startTime.minute < 10 ? '0' : ''}${slot.startTime.minute}--%>
                                                 </div>
                                                 <div class="text-xs text-gray-400">
-                                                    <c:out value="${slot.endTime}"/>
+<%--                                                    ${slot.endTime.hour}:${slot.endTime.minute < 10 ? '0' : ''}${slot.endTime.minute}--%>
                                                 </div>
                                             </div>
 
@@ -220,26 +220,6 @@
                                     <c:out value="${daySchedule != null ? daySchedule.size() : 0}"/>
                                 </span>
                             </div>
-                        </div>
-                    </div>
-
-                    <!-- Quick Actions -->
-                    <div class="bg-gray-800 border border-gray-700 rounded-lg p-6">
-                        <h3 class="text-lg font-bold text-white mb-4">Quick Actions</h3>
-
-                        <div class="space-y-3">
-                            <button class="w-full px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition text-sm">
-                                Block Time Slot
-                            </button>
-                            <button class="w-full px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition text-sm">
-                                Add Emergency Slot
-                            </button>
-                            <button class="w-full px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition text-sm">
-                                View Patient Records
-                            </button>
-                            <button class="w-full px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white rounded-lg transition text-sm">
-                                Export Schedule
-                            </button>
                         </div>
                     </div>
 

@@ -44,13 +44,23 @@ public class DoctorScheduleServlet extends HttpServlet {
             // Get date parameter (default to today)
             String dateParam = req.getParameter("date");
             LocalDate selectedDate = dateParam != null ?
-                LocalDate.parse(dateParam) : LocalDate.now();
+                    LocalDate.parse(dateParam) : LocalDate.now();
 
             // Get doctor's schedule for the selected date
             List<ConsultationSlot> daySchedule = consultationService.getDoctorPlaning(
-                doctor.getId(), selectedDate);
+                    doctor.getId(), selectedDate);
 
             System.out.println("schedule: " + daySchedule);
+
+            if (daySchedule != null) {
+                for (ConsultationSlot slot : daySchedule) {
+                    // Force initialization of consultation and patient
+                    if (slot.getConsultation() != null) {
+                        slot.getConsultation().getPatient().getFirstName();
+                        slot.getConsultation().getReason();
+                    }
+                }
+            }
 
             // Set attributes for JSP
             req.setAttribute("doctor", doctor);
@@ -58,19 +68,16 @@ public class DoctorScheduleServlet extends HttpServlet {
             req.setAttribute("daySchedule", daySchedule);
             req.setAttribute("pageTitle", "My Schedule");
 
-            // Format date for display
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEEE, MMMM dd, yyyy");
-            req.setAttribute("formattedDate", selectedDate.format(formatter));
+            req.setAttribute("formattedDate", selectedDate);
 
-            // Generate week dates for navigation
             LocalDate startOfWeek = selectedDate.minusDays(selectedDate.getDayOfWeek().getValue() - 1);
             req.setAttribute("startOfWeek", startOfWeek);
 
         } catch (Exception e) {
+            e.printStackTrace();
             session.setAttribute("errorMessage", "Error loading schedule: " + e.getMessage());
         }
 
-        // Forward to schedule view
         req.getRequestDispatcher("/WEB-INF/view/doctor/schedule.jsp").forward(req, resp);
     }
 }

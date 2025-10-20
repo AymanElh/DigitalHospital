@@ -488,51 +488,65 @@
                             </tr>
                             </thead>
                             <tbody class="divide-y divide-gray-700">
-                            <!-- Static Data - Replace with forEach loop -->
-                            <tr class="hover:bg-gray-700 transition">
-                                <td class="px-4 py-4">
-                                    <div class="flex items-center space-x-3">
-                                        <div class="w-8 h-8 rounded-full bg-purple-600 flex items-center justify-center text-white text-sm font-semibold">
-                                            AM
-                                        </div>
-                                        <div>
-                                            <p class="text-white font-medium">Alice Morrison</p>
-                                            <p class="text-sm text-gray-400">alice.m@email.com</p>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td class="px-4 py-4 text-gray-300">18/10/2025 10:30</td>
-                                <td class="px-4 py-4">
-                                    <span class="inline-block px-2 py-1 text-xs rounded bg-green-900 text-green-300 border border-green-700">
-                                        Completed
-                                    </span>
-                                </td>
-                                <td class="px-4 py-4 text-gray-300 max-w-xs truncate">
-                                    ECG performed. Prescribed medication...
-                                </td>
-                            </tr>
-                            <tr class="hover:bg-gray-700 transition">
-                                <td class="px-4 py-4">
-                                    <div class="flex items-center space-x-3">
-                                        <div class="w-8 h-8 rounded-full bg-purple-600 flex items-center justify-center text-white text-sm font-semibold">
-                                            RJ
-                                        </div>
-                                        <div>
-                                            <p class="text-white font-medium">Robert Johnson</p>
-                                            <p class="text-sm text-gray-400">robert.j@email.com</p>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td class="px-4 py-4 text-gray-300">17/10/2025 14:15</td>
-                                <td class="px-4 py-4">
-                                    <span class="inline-block px-2 py-1 text-xs rounded bg-blue-900 text-blue-300 border border-blue-700">
-                                        Validated
-                                    </span>
-                                </td>
-                                <td class="px-4 py-4 text-gray-300 max-w-xs truncate">
-                                    Routine checkup. Blood pressure normal...
-                                </td>
-                            </tr>
+                            <!-- Dynamic Data - Loop through consultations -->
+                            <c:forEach var="consultation" items="${doctor.consultationList}" varStatus="status">
+                                <c:if test="${status.index < 5}">
+                                    <tr class="hover:bg-gray-700 transition">
+                                        <td class="px-4 py-4">
+                                            <div class="flex items-center space-x-3">
+                                                <div class="w-8 h-8 rounded-full bg-purple-600 flex items-center justify-center text-white text-sm font-semibold">
+                                                    ${consultation.patient.firstName.substring(0,1).toUpperCase()}${consultation.patient.lastName.substring(0,1).toUpperCase()}
+                                                </div>
+                                                <div>
+                                                    <p class="text-white font-medium">
+                                                        <c:out value="${consultation.patient.firstName} ${consultation.patient.lastName}"/>
+                                                    </p>
+                                                    <p class="text-sm text-gray-400">
+                                                        <c:out value="${consultation.patient.email}"/>
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="px-4 py-4 text-gray-300">
+<%--                                            <fmt:formatDate value="${consultation.slot.startTime}" pattern="dd/MM/yyyy HH:mm"/>--%>
+                                        </td>
+                                        <td class="px-4 py-4">
+                                            <c:choose>
+                                                <c:when test="${consultation.consultationStatus == 'COMPLETED'}">
+                                                    <span class="inline-block px-2 py-1 text-xs rounded bg-green-900 text-green-300 border border-green-700">
+                                                        Completed
+                                                    </span>
+                                                </c:when>
+                                                <c:when test="${consultation.consultationStatus == 'VALIDATED'}">
+                                                    <span class="inline-block px-2 py-1 text-xs rounded bg-blue-900 text-blue-300 border border-blue-700">
+                                                        Validated
+                                                    </span>
+                                                </c:when>
+                                                <c:when test="${consultation.consultationStatus == 'RESERVED'}">
+                                                    <span class="inline-block px-2 py-1 text-xs rounded bg-yellow-900 text-yellow-300 border border-yellow-700">
+                                                        Reserved
+                                                    </span>
+                                                </c:when>
+                                                <c:otherwise>
+                                                    <span class="inline-block px-2 py-1 text-xs rounded bg-gray-900 text-gray-300 border border-gray-700">
+                                                        <c:out value="${consultation.consultationStatus}"/>
+                                                    </span>
+                                                </c:otherwise>
+                                            </c:choose>
+                                        </td>
+                                        <td class="px-4 py-4 text-gray-300 max-w-xs truncate">
+                                            <c:choose>
+                                                <c:when test="${not empty consultation.medicalReport}">
+                                                    <c:out value="${consultation.medicalReport}"/>
+                                                </c:when>
+                                                <c:otherwise>
+                                                    <span class="text-gray-500 italic">No report yet</span>
+                                                </c:otherwise>
+                                            </c:choose>
+                                        </td>
+                                    </tr>
+                                </c:if>
+                            </c:forEach>
                             </tbody>
                         </table>
                     </div>
