@@ -94,6 +94,8 @@ public class DoctorServlet extends HttpServlet {
         List<DepartmentDTO> departmentList = departmentService.findAll().stream().map(DepartmentMapper::toDTO).toList();
         req.setAttribute("departments", departmentList);
 
+        String str = "ali";
+        str.toUpperCase();
         List<DoctorDTO> doctors = doctorService.findAll().stream().map(DoctorMapper::toDTO).collect(Collectors.toList());
 
         Long totalSpec = doctors
